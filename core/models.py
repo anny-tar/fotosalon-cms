@@ -28,29 +28,40 @@ class SiteSettings(models.Model):
         verbose_name='OG Image'
     )
     color_primary = models.CharField(
-        max_length=7,
-        default='#2563eb',
+        max_length=7, default='#2563eb',
         verbose_name='Основной цвет'
     )
     color_primary_dark = models.CharField(
-        max_length=7,
-        default='#1d4ed8',
+        max_length=7, default='#1d4ed8',
         verbose_name='Тёмный акцент'
     )
     color_accent = models.CharField(
-        max_length=7,
-        default='#f59e0b',
+        max_length=7, default='#f59e0b',
         verbose_name='Акцентный цвет'
     )
     color_bg = models.CharField(
-        max_length=7,
-        default='#f9fafb',
+        max_length=7, default='#f9fafb',
         verbose_name='Цвет фона'
     )
+    color_card = models.CharField(
+        max_length=7, default='#ffffff',
+        verbose_name='Цвет карточек'
+    )
     color_text = models.CharField(
-        max_length=7,
-        default='#111827',
-        verbose_name='Цвет текста'
+        max_length=7, default='#111827',
+        verbose_name='Основной цвет текста'
+    )
+    color_text_secondary = models.CharField(
+        max_length=7, default='#6b7280',
+        verbose_name='Вторичный цвет текста'
+    )
+    color_header_text = models.CharField(
+        max_length=7, default='#ffffff',
+        verbose_name='Цвет текста в шапке'
+    )
+    color_footer_text = models.CharField(
+        max_length=7, default='#e5e7eb',
+        verbose_name='Цвет текста в подвале'
     )
 
     class Meta:
@@ -62,33 +73,17 @@ class SiteSettings(models.Model):
 
 
 class ContactInfo(models.Model):
-    address = models.CharField(
-        max_length=500,
-        verbose_name='Адрес'
-    )
-    phone = models.CharField(
-        max_length=50,
-        verbose_name='Телефон'
-    )
-    email = models.EmailField(
-        verbose_name='Email'
-    )
-    working_hours = models.TextField(
-        verbose_name='Режим работы'
-    )
+    address = models.CharField(max_length=500, verbose_name='Адрес')
+    phone = models.CharField(max_length=50, verbose_name='Телефон')
+    email = models.EmailField(verbose_name='Email')
+    working_hours = models.TextField(verbose_name='Режим работы')
     map_lat = models.DecimalField(
-        max_digits=9,
-        decimal_places=6,
-        blank=True,
-        null=True,
-        verbose_name='Широта'
+        max_digits=9, decimal_places=6,
+        blank=True, null=True, verbose_name='Широта'
     )
     map_lng = models.DecimalField(
-        max_digits=9,
-        decimal_places=6,
-        blank=True,
-        null=True,
-        verbose_name='Долгота'
+        max_digits=9, decimal_places=6,
+        blank=True, null=True, verbose_name='Долгота'
     )
 
     class Meta:
@@ -100,29 +95,12 @@ class ContactInfo(models.Model):
 
 
 class SmtpSettings(models.Model):
-    host = models.CharField(
-        max_length=255,
-        verbose_name='SMTP сервер'
-    )
-    port = models.PositiveIntegerField(
-        default=587,
-        verbose_name='Порт'
-    )
-    username = models.CharField(
-        max_length=255,
-        verbose_name='Логин'
-    )
-    password = models.CharField(
-        max_length=500,
-        verbose_name='Пароль (зашифрован)'
-    )
-    from_email = models.EmailField(
-        verbose_name='Адрес отправителя'
-    )
-    use_tls = models.BooleanField(
-        default=True,
-        verbose_name='Использовать TLS'
-    )
+    host = models.CharField(max_length=255, verbose_name='SMTP сервер')
+    port = models.PositiveIntegerField(default=587, verbose_name='Порт')
+    username = models.CharField(max_length=255, verbose_name='Логин')
+    password = models.CharField(max_length=500, verbose_name='Пароль (зашифрован)')
+    from_email = models.EmailField(verbose_name='Адрес отправителя')
+    use_tls = models.BooleanField(default=True, verbose_name='Использовать TLS')
 
     class Meta:
         verbose_name = 'Настройки SMTP'
@@ -133,18 +111,9 @@ class SmtpSettings(models.Model):
 
 
 class EmailTemplate(models.Model):
-    key = models.CharField(
-        max_length=100,
-        unique=True,
-        verbose_name='Ключ шаблона'
-    )
-    subject = models.CharField(
-        max_length=255,
-        verbose_name='Тема письма'
-    )
-    body = models.TextField(
-        verbose_name='Текст письма'
-    )
+    key = models.CharField(max_length=100, unique=True, verbose_name='Ключ шаблона')
+    subject = models.CharField(max_length=255, verbose_name='Тема письма')
+    body = models.TextField(verbose_name='Текст письма')
 
     class Meta:
         verbose_name = 'Шаблон email-уведомления'
@@ -155,18 +124,9 @@ class EmailTemplate(models.Model):
 
 
 class SectionTemplate(models.Model):
-    name = models.CharField(
-        max_length=255,
-        verbose_name='Название шаблона'
-    )
-    template_name = models.CharField(
-        max_length=255,
-        verbose_name='Имя файла шаблона'
-    )
-    description = models.TextField(
-        blank=True,
-        verbose_name='Описание'
-    )
+    name = models.CharField(max_length=255, verbose_name='Название шаблона')
+    template_name = models.CharField(max_length=255, verbose_name='Имя файла шаблона')
+    description = models.TextField(blank=True, verbose_name='Описание')
 
     class Meta:
         verbose_name = 'Шаблон секции'
@@ -183,28 +143,14 @@ class PageSection(models.Model):
     ]
 
     page = models.CharField(
-        max_length=10,
-        choices=PAGE_CHOICES,
-        verbose_name='Страница'
+        max_length=10, choices=PAGE_CHOICES, verbose_name='Страница'
     )
     template = models.ForeignKey(
-        SectionTemplate,
-        on_delete=models.PROTECT,
-        verbose_name='Шаблон секции'
+        SectionTemplate, on_delete=models.PROTECT, verbose_name='Шаблон секции'
     )
-    order = models.PositiveIntegerField(
-        default=0,
-        verbose_name='Порядок'
-    )
-    is_active = models.BooleanField(
-        default=True,
-        verbose_name='Активна'
-    )
-    content = models.JSONField(
-        default=dict,
-        blank=True,
-        verbose_name='Содержимое секции'
-    )
+    order = models.PositiveIntegerField(default=0, verbose_name='Порядок')
+    is_active = models.BooleanField(default=True, verbose_name='Активна')
+    content = models.JSONField(default=dict, blank=True, verbose_name='Содержимое секции')
 
     class Meta:
         verbose_name = 'Секция страницы'

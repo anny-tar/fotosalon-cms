@@ -15,14 +15,18 @@ def settings_view(request):
         if not settings_obj:
             settings_obj = SiteSettings()
 
-        settings_obj.site_name = request.POST.get('site_name', '').strip()
-        settings_obj.meta_title = request.POST.get('meta_title', '').strip()
-        settings_obj.meta_description = request.POST.get('meta_description', '').strip()
-        settings_obj.color_primary = request.POST.get('color_primary', '#2563eb')
-        settings_obj.color_primary_dark = request.POST.get('color_primary_dark', '#1d4ed8')
-        settings_obj.color_accent = request.POST.get('color_accent', '#f59e0b')
-        settings_obj.color_bg = request.POST.get('color_bg', '#f9fafb')
-        settings_obj.color_text = request.POST.get('color_text', '#111827')
+        settings_obj.site_name            = request.POST.get('site_name', '').strip()
+        settings_obj.meta_title           = request.POST.get('meta_title', '').strip()
+        settings_obj.meta_description     = request.POST.get('meta_description', '').strip()
+        settings_obj.color_primary        = request.POST.get('color_primary', '#2563eb')
+        settings_obj.color_primary_dark   = request.POST.get('color_primary_dark', '#1d4ed8')
+        settings_obj.color_accent         = request.POST.get('color_accent', '#f59e0b')
+        settings_obj.color_bg             = request.POST.get('color_bg', '#f9fafb')
+        settings_obj.color_card           = request.POST.get('color_card', '#ffffff')
+        settings_obj.color_text           = request.POST.get('color_text', '#111827')
+        settings_obj.color_text_secondary = request.POST.get('color_text_secondary', '#6b7280')
+        settings_obj.color_header_text    = request.POST.get('color_header_text', '#ffffff')
+        settings_obj.color_footer_text    = request.POST.get('color_footer_text', '#e5e7eb')
 
         logo = request.FILES.get('logo')
         if logo:
@@ -50,12 +54,12 @@ def contact_settings(request):
         if not contact:
             contact = ContactInfo()
 
-        contact.address = request.POST.get('address', '').strip()
-        contact.phone = request.POST.get('phone', '').strip()
-        contact.email = request.POST.get('email', '').strip()
+        contact.address       = request.POST.get('address', '').strip()
+        contact.phone         = request.POST.get('phone', '').strip()
+        contact.email         = request.POST.get('email', '').strip()
         contact.working_hours = request.POST.get('working_hours', '').strip()
-        contact.map_lat = request.POST.get('map_lat') or None
-        contact.map_lng = request.POST.get('map_lng') or None
+        contact.map_lat       = request.POST.get('map_lat') or None
+        contact.map_lng       = request.POST.get('map_lng') or None
         contact.save()
         messages.success(request, 'Контактные данные сохранены.')
         return redirect('/panel/settings/contact/')
@@ -70,11 +74,11 @@ def smtp_settings(request):
         if not smtp:
             smtp = SmtpSettings()
 
-        smtp.host = request.POST.get('host', '').strip()
-        smtp.port = int(request.POST.get('port', 587))
-        smtp.username = request.POST.get('username', '').strip()
+        smtp.host       = request.POST.get('host', '').strip()
+        smtp.port       = int(request.POST.get('port', 587))
+        smtp.username   = request.POST.get('username', '').strip()
         smtp.from_email = request.POST.get('from_email', '').strip()
-        smtp.use_tls = request.POST.get('use_tls') == 'on'
+        smtp.use_tls    = request.POST.get('use_tls') == 'on'
 
         password = request.POST.get('password', '').strip()
         if password:
@@ -105,10 +109,10 @@ def sections_list(request):
 @admin_required
 def section_create(request):
     if request.method == 'POST':
-        page = request.POST.get('page', 'home')
+        page        = request.POST.get('page', 'home')
         template_id = request.POST.get('template')
-        order = request.POST.get('order', 0)
-        content = request.POST.get('content', '{}')
+        order       = request.POST.get('order', 0)
+        content     = request.POST.get('content', '{}')
 
         import json
         try:
@@ -131,7 +135,7 @@ def section_create(request):
 def section_edit(request, pk):
     section = get_object_or_404(PageSection, pk=pk)
     if request.method == 'POST':
-        section.order = int(request.POST.get('order', 0))
+        section.order     = int(request.POST.get('order', 0))
         section.is_active = request.POST.get('is_active') == 'on'
 
         import json

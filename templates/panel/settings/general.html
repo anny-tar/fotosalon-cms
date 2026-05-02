@@ -12,6 +12,82 @@
     <a href="/panel/settings/sections/" class="tab">Конструктор страниц</a>
 </div>
 
+<!-- Tooltip стили -->
+<style>
+.color-field { margin-bottom: 16px; }
+.color-field label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 6px;
+}
+.tooltip-wrap { position: relative; display: inline-block; }
+.tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #6b7280;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+}
+.tooltip-box {
+    display: none;
+    position: absolute;
+    left: 22px;
+    top: -4px;
+    background: #1e293b;
+    color: #fff;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    z-index: 100;
+    font-weight: 400;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.tooltip-box::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 8px;
+    border: 5px solid transparent;
+    border-right-color: #1e293b;
+    border-left: none;
+}
+.tooltip-wrap.active .tooltip-box { display: block; }
+.color-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.color-hex {
+    font-size: 13px;
+    color: #6b7280;
+    font-family: monospace;
+}
+
+/* Hover на кнопке предпросмотра */
+#prev-cta {
+    transition: background 0.2s, opacity 0.2s;
+    cursor: pointer;
+}
+#prev-cta:hover { opacity: 0.85; }
+#prev-btn {
+    transition: background 0.2s, opacity 0.2s;
+    cursor: pointer;
+}
+#prev-btn:hover { opacity: 0.85; }
+</style>
+
 <form method="post" enctype="multipart/form-data" class="detail-card">
     {% csrf_token %}
 
@@ -28,8 +104,7 @@
     </div>
     <div class="form-group">
         <label>Meta description</label>
-        <textarea name="meta_description"
-                  rows="3">{{ settings.meta_description|default:'' }}</textarea>
+        <textarea name="meta_description" rows="3">{{ settings.meta_description|default:'' }}</textarea>
     </div>
     <div class="form-group">
         <label>Логотип</label>
@@ -40,67 +115,169 @@
         <input type="file" name="logo" accept="image/*">
     </div>
 
-    <h3 style="margin: 24px 0 16px">Цветовая схема</h3>
-    <p style="color:#6b7280;font-size:13px;margin-bottom:16px">
+    <h3 style="margin: 24px 0 8px">Цветовая схема</h3>
+    <p style="color:#6b7280;font-size:13px;margin-bottom:20px">
         Цвета применяются на публичной части сайта.
+        Нажмите <strong>?</strong> рядом с названием чтобы узнать где используется цвет.
     </p>
 
     <div class="form-grid">
-        <div class="form-group">
-            <label>Основной цвет</label>
-            <div style="display:flex;gap:8px;align-items:center">
+
+        {% comment %}Макрос для поля цвета — реализован через include-подобный блок{% endcomment %}
+
+        <!-- Основной цвет -->
+        <div class="color-field">
+            <label>
+                Основной цвет
+                <div class="tooltip-wrap" onclick="toggleTip(this)">
+                    <span class="tooltip-icon">?</span>
+                    <div class="tooltip-box">Фон шапки, кнопки, ссылки, цены в карточках</div>
+                </div>
+            </label>
+            <div class="color-row">
                 <input type="color" name="color_primary" id="color_primary"
                        value="{{ settings.color_primary|default:'#2563eb' }}"
                        style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
-                <span id="color_primary_val" style="font-size:13px;color:#6b7280">
-                    {{ settings.color_primary|default:'#2563eb' }}
-                </span>
+                <span id="color_primary_val" class="color-hex">{{ settings.color_primary|default:'#2563eb' }}</span>
             </div>
         </div>
-        <div class="form-group">
-            <label>Тёмный акцент</label>
-            <div style="display:flex;gap:8px;align-items:center">
+
+        <!-- Тёмный акцент -->
+        <div class="color-field">
+            <label>
+                Тёмный акцент
+                <div class="tooltip-wrap" onclick="toggleTip(this)">
+                    <span class="tooltip-icon">?</span>
+                    <div class="tooltip-box">Фон подвала, hover-состояние кнопок</div>
+                </div>
+            </label>
+            <div class="color-row">
                 <input type="color" name="color_primary_dark" id="color_primary_dark"
                        value="{{ settings.color_primary_dark|default:'#1d4ed8' }}"
                        style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
-                <span id="color_primary_dark_val" style="font-size:13px;color:#6b7280">
-                    {{ settings.color_primary_dark|default:'#1d4ed8' }}
-                </span>
+                <span id="color_primary_dark_val" class="color-hex">{{ settings.color_primary_dark|default:'#1d4ed8' }}</span>
             </div>
         </div>
-        <div class="form-group">
-            <label>Акцентный цвет</label>
-            <div style="display:flex;gap:8px;align-items:center">
+
+        <!-- Акцентный цвет -->
+        <div class="color-field">
+            <label>
+                Акцентный цвет
+                <div class="tooltip-wrap" onclick="toggleTip(this)">
+                    <span class="tooltip-icon">?</span>
+                    <div class="tooltip-box">Кнопка «Записаться», выделения, звёзды отзывов</div>
+                </div>
+            </label>
+            <div class="color-row">
                 <input type="color" name="color_accent" id="color_accent"
                        value="{{ settings.color_accent|default:'#f59e0b' }}"
                        style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
-                <span id="color_accent_val" style="font-size:13px;color:#6b7280">
-                    {{ settings.color_accent|default:'#f59e0b' }}
-                </span>
+                <span id="color_accent_val" class="color-hex">{{ settings.color_accent|default:'#f59e0b' }}</span>
             </div>
         </div>
-        <div class="form-group">
-            <label>Цвет фона</label>
-            <div style="display:flex;gap:8px;align-items:center">
+
+        <!-- Цвет фона -->
+        <div class="color-field">
+            <label>
+                Цвет фона
+                <div class="tooltip-wrap" onclick="toggleTip(this)">
+                    <span class="tooltip-icon">?</span>
+                    <div class="tooltip-box">Фон всех страниц сайта</div>
+                </div>
+            </label>
+            <div class="color-row">
                 <input type="color" name="color_bg" id="color_bg"
                        value="{{ settings.color_bg|default:'#f9fafb' }}"
                        style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
-                <span id="color_bg_val" style="font-size:13px;color:#6b7280">
-                    {{ settings.color_bg|default:'#f9fafb' }}
-                </span>
+                <span id="color_bg_val" class="color-hex">{{ settings.color_bg|default:'#f9fafb' }}</span>
             </div>
         </div>
-        <div class="form-group">
-            <label>Цвет текста</label>
-            <div style="display:flex;gap:8px;align-items:center">
+
+        <!-- Цвет карточек -->
+        <div class="color-field">
+            <label>
+                Цвет карточек
+                <div class="tooltip-wrap" onclick="toggleTip(this)">
+                    <span class="tooltip-icon">?</span>
+                    <div class="tooltip-box">Фон карточек услуг, товаров, новостей</div>
+                </div>
+            </label>
+            <div class="color-row">
+                <input type="color" name="color_card" id="color_card"
+                       value="{{ settings.color_card|default:'#ffffff' }}"
+                       style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
+                <span id="color_card_val" class="color-hex">{{ settings.color_card|default:'#ffffff' }}</span>
+            </div>
+        </div>
+
+        <!-- Основной текст -->
+        <div class="color-field">
+            <label>
+                Основной текст
+                <div class="tooltip-wrap" onclick="toggleTip(this)">
+                    <span class="tooltip-icon">?</span>
+                    <div class="tooltip-box">Заголовки, названия услуг и товаров</div>
+                </div>
+            </label>
+            <div class="color-row">
                 <input type="color" name="color_text" id="color_text"
                        value="{{ settings.color_text|default:'#111827' }}"
                        style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
-                <span id="color_text_val" style="font-size:13px;color:#6b7280">
-                    {{ settings.color_text|default:'#111827' }}
-                </span>
+                <span id="color_text_val" class="color-hex">{{ settings.color_text|default:'#111827' }}</span>
             </div>
         </div>
+
+        <!-- Вторичный текст -->
+        <div class="color-field">
+            <label>
+                Вторичный текст
+                <div class="tooltip-wrap" onclick="toggleTip(this)">
+                    <span class="tooltip-icon">?</span>
+                    <div class="tooltip-box">Описания, даты, подписи, категории</div>
+                </div>
+            </label>
+            <div class="color-row">
+                <input type="color" name="color_text_secondary" id="color_text_secondary"
+                       value="{{ settings.color_text_secondary|default:'#6b7280' }}"
+                       style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
+                <span id="color_text_secondary_val" class="color-hex">{{ settings.color_text_secondary|default:'#6b7280' }}</span>
+            </div>
+        </div>
+
+        <!-- Текст в шапке -->
+        <div class="color-field">
+            <label>
+                Текст в шапке
+                <div class="tooltip-wrap" onclick="toggleTip(this)">
+                    <span class="tooltip-icon">?</span>
+                    <div class="tooltip-box">Название салона и пункты навигации в шапке</div>
+                </div>
+            </label>
+            <div class="color-row">
+                <input type="color" name="color_header_text" id="color_header_text"
+                       value="{{ settings.color_header_text|default:'#ffffff' }}"
+                       style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
+                <span id="color_header_text_val" class="color-hex">{{ settings.color_header_text|default:'#ffffff' }}</span>
+            </div>
+        </div>
+
+        <!-- Текст в подвале -->
+        <div class="color-field">
+            <label>
+                Текст в подвале
+                <div class="tooltip-wrap" onclick="toggleTip(this)">
+                    <span class="tooltip-icon">?</span>
+                    <div class="tooltip-box">Копирайт, ссылки и контакты в подвале</div>
+                </div>
+            </label>
+            <div class="color-row">
+                <input type="color" name="color_footer_text" id="color_footer_text"
+                       value="{{ settings.color_footer_text|default:'#e5e7eb' }}"
+                       style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
+                <span id="color_footer_text_val" class="color-hex">{{ settings.color_footer_text|default:'#e5e7eb' }}</span>
+            </div>
+        </div>
+
     </div>
 
     <!-- Предпросмотр -->
@@ -112,103 +289,88 @@
         border: 1px solid #e5e7eb;
         margin-bottom: 24px;
     ">
-        <!-- Шапка сайта -->
+        <!-- Шапка -->
         <div id="prev-header" style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 24px;
-            background: {{ settings.color_primary|default:'#2563eb' }};
+            display:flex;align-items:center;
+            justify-content:space-between;
+            padding:14px 24px;
+            background:{{ settings.color_primary|default:'#2563eb' }};
         ">
             <span id="prev-logo" style="
-                color: #fff;
-                font-weight: 700;
-                font-size: 18px;
+                color:{{ settings.color_header_text|default:'#ffffff' }};
+                font-weight:700;font-size:18px;
             ">{{ settings.site_name|default:'ФотоСалон' }}</span>
             <div style="display:flex;gap:16px">
-                <span style="color:rgba(255,255,255,0.85);font-size:13px">Услуги</span>
-                <span style="color:rgba(255,255,255,0.85);font-size:13px">Портфолио</span>
-                <span style="color:rgba(255,255,255,0.85);font-size:13px">Контакты</span>
+                <span id="prev-nav-1" style="color:{{ settings.color_header_text|default:'#ffffff' }};font-size:13px;opacity:0.85">Услуги</span>
+                <span id="prev-nav-2" style="color:{{ settings.color_header_text|default:'#ffffff' }};font-size:13px;opacity:0.85">Портфолио</span>
+                <span id="prev-nav-3" style="color:{{ settings.color_header_text|default:'#ffffff' }};font-size:13px;opacity:0.85">Контакты</span>
             </div>
             <div id="prev-btn" style="
-                background: {{ settings.color_accent|default:'#f59e0b' }};
-                color: #fff;
-                padding: 7px 16px;
-                border-radius: 6px;
-                font-size: 13px;
-                font-weight: 600;
-            ">Записаться</div>
+                background:{{ settings.color_accent|default:'#f59e0b' }};
+                color:#fff;padding:7px 16px;
+                border-radius:6px;font-size:13px;font-weight:600;
+                transition:opacity 0.2s;cursor:pointer;
+            "
+            onmouseover="this.style.opacity='0.8'"
+            onmouseout="this.style.opacity='1'">Записаться</div>
         </div>
 
-        <!-- Тело страницы -->
+        <!-- Тело -->
         <div id="prev-body" style="
-            background: {{ settings.color_bg|default:'#f9fafb' }};
-            padding: 28px 24px;
+            background:{{ settings.color_bg|default:'#f9fafb' }};
+            padding:28px 24px;
         ">
-            <!-- Заголовок -->
-            <div style="margin-bottom:20px">
-                <h2 id="prev-heading" style="
-                    font-size: 22px;
-                    font-weight: 700;
-                    margin-bottom: 8px;
-                    color: {{ settings.color_text|default:'#111827' }};
-                ">Профессиональная фотография</h2>
-                <p id="prev-text" style="
-                    color: {{ settings.color_text|default:'#111827' }};
-                    opacity: 0.7;
-                    font-size: 14px;
-                    line-height: 1.6;
-                ">Портретные, семейные, детские и свадебные съёмки. Запишитесь онлайн в любое время.</p>
-            </div>
+            <h2 id="prev-heading" style="
+                font-size:22px;font-weight:700;margin-bottom:8px;
+                color:{{ settings.color_text|default:'#111827' }};
+            ">Профессиональная фотография</h2>
+            <p id="prev-subtext" style="
+                color:{{ settings.color_text_secondary|default:'#6b7280' }};
+                font-size:14px;line-height:1.6;margin-bottom:20px;
+            ">Портретные, семейные, детские и свадебные съёмки. Запишитесь онлайн в любое время.</p>
 
-            <!-- Карточки услуг -->
+            <!-- Карточки -->
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
-                {% for service_name in "Портретная,Семейная,Свадебная"|split:"," %}
-                <div style="
-                    background: #fff;
-                    border-radius: 8px;
-                    padding: 14px;
-                    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-                ">
-                    <div id="prev-card-title-{{ forloop.counter }}" style="
-                        font-weight: 600;
-                        font-size: 14px;
-                        margin-bottom: 4px;
-                        color: {{ settings.color_text|default:'#111827' }};
-                    ">{{ service_name }} съёмка</div>
-                    <div id="prev-card-price-{{ forloop.counter }}" style="
-                        font-size: 13px;
-                        color: {{ settings.color_primary|default:'#2563eb' }};
-                        font-weight: 500;
-                    ">от 3 000 ₽</div>
+                <div id="prev-card-1" style="background:{{ settings.color_card|default:'#ffffff' }};border-radius:8px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,0.08)">
+                    <div id="prev-card-title-1" style="font-weight:600;font-size:14px;margin-bottom:4px;color:{{ settings.color_text|default:'#111827' }}">Портретная съёмка</div>
+                    <div id="prev-card-desc-1" style="font-size:12px;margin-bottom:6px;color:{{ settings.color_text_secondary|default:'#6b7280' }}">Индивидуальная съёмка</div>
+                    <div id="prev-card-price-1" style="font-size:13px;font-weight:500;color:{{ settings.color_primary|default:'#2563eb' }}">от 3 000 ₽</div>
                 </div>
-                {% endfor %}
+                <div id="prev-card-2" style="background:{{ settings.color_card|default:'#ffffff' }};border-radius:8px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,0.08)">
+                    <div id="prev-card-title-2" style="font-weight:600;font-size:14px;margin-bottom:4px;color:{{ settings.color_text|default:'#111827' }}">Семейная съёмка</div>
+                    <div id="prev-card-desc-2" style="font-size:12px;margin-bottom:6px;color:{{ settings.color_text_secondary|default:'#6b7280' }}">Тёплые семейные моменты</div>
+                    <div id="prev-card-price-2" style="font-size:13px;font-weight:500;color:{{ settings.color_primary|default:'#2563eb' }}">от 5 000 ₽</div>
+                </div>
+                <div id="prev-card-3" style="background:{{ settings.color_card|default:'#ffffff' }};border-radius:8px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,0.08)">
+                    <div id="prev-card-title-3" style="font-weight:600;font-size:14px;margin-bottom:4px;color:{{ settings.color_text|default:'#111827' }}">Свадебная съёмка</div>
+                    <div id="prev-card-desc-3" style="font-size:12px;margin-bottom:6px;color:{{ settings.color_text_secondary|default:'#6b7280' }}">Незабываемый день</div>
+                    <div id="prev-card-price-3" style="font-size:13px;font-weight:500;color:{{ settings.color_primary|default:'#2563eb' }}">от 15 000 ₽</div>
+                </div>
             </div>
 
-            <!-- Кнопка -->
             <div id="prev-cta" style="
-                display: inline-block;
-                background: {{ settings.color_primary|default:'#2563eb' }};
-                color: #fff;
-                padding: 10px 24px;
-                border-radius: 8px;
-                font-weight: 600;
-                font-size: 14px;
-            ">Смотреть все услуги →</div>
+                display:inline-block;
+                background:{{ settings.color_primary|default:'#2563eb' }};
+                color:#fff;padding:10px 24px;border-radius:8px;
+                font-weight:600;font-size:14px;
+                transition:background 0.2s;cursor:pointer;
+            "
+            onmouseover="this.style.background=document.getElementById('color_primary_dark').value"
+            onmouseout="this.style.background=document.getElementById('color_primary').value">
+                Смотреть все услуги →
+            </div>
         </div>
 
         <!-- Подвал -->
         <div id="prev-footer" style="
-            background: {{ settings.color_primary_dark|default:'#1d4ed8' }};
-            padding: 14px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background:{{ settings.color_primary_dark|default:'#1d4ed8' }};
+            padding:14px 24px;
+            display:flex;justify-content:space-between;align-items:center;
         ">
-            <span style="color:rgba(255,255,255,0.8);font-size:12px">
+            <span id="prev-footer-left" style="color:{{ settings.color_footer_text|default:'#e5e7eb' }};font-size:12px">
                 © 2026 {{ settings.site_name|default:'ФотоСалон' }}
             </span>
-            <span style="color:rgba(255,255,255,0.8);font-size:12px">
+            <span id="prev-footer-right" style="color:{{ settings.color_footer_text|default:'#e5e7eb' }};font-size:12px">
                 +7 (000) 000-00-00
             </span>
         </div>
@@ -221,48 +383,82 @@
 
 {% block extra_js %}
 <script>
-    const fields = [
-        { id: 'color_primary',      label: 'color_primary_val' },
-        { id: 'color_primary_dark', label: 'color_primary_dark_val' },
-        { id: 'color_accent',       label: 'color_accent_val' },
-        { id: 'color_bg',           label: 'color_bg_val' },
-        { id: 'color_text',         label: 'color_text_val' },
-    ];
+// Tooltip
+function toggleTip(el) {
+    document.querySelectorAll('.tooltip-wrap.active').forEach(function(t) {
+        if (t !== el) t.classList.remove('active');
+    });
+    el.classList.toggle('active');
+}
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.tooltip-wrap')) {
+        document.querySelectorAll('.tooltip-wrap.active').forEach(function(t) {
+            t.classList.remove('active');
+        });
+    }
+});
 
-    function updatePreview() {
-        const primary     = document.getElementById('color_primary').value;
-        const primaryDark = document.getElementById('color_primary_dark').value;
-        const accent      = document.getElementById('color_accent').value;
-        const bg          = document.getElementById('color_bg').value;
-        const text        = document.getElementById('color_text').value;
+// Поля цветов
+const colorFields = [
+    { id: 'color_primary',         val: 'color_primary_val' },
+    { id: 'color_primary_dark',    val: 'color_primary_dark_val' },
+    { id: 'color_accent',          val: 'color_accent_val' },
+    { id: 'color_bg',              val: 'color_bg_val' },
+    { id: 'color_card',            val: 'color_card_val' },
+    { id: 'color_text',            val: 'color_text_val' },
+    { id: 'color_text_secondary',  val: 'color_text_secondary_val' },
+    { id: 'color_header_text',     val: 'color_header_text_val' },
+    { id: 'color_footer_text',     val: 'color_footer_text_val' },
+];
 
-        // Шапка
-        document.getElementById('prev-header').style.background = primary;
-        // Кнопка записаться
-        document.getElementById('prev-btn').style.background = accent;
-        // Тело
-        document.getElementById('prev-body').style.background = bg;
-        // Заголовок и текст
-        document.getElementById('prev-heading').style.color = text;
-        document.getElementById('prev-text').style.color = text;
-        // Карточки
-        for (let i = 1; i <= 3; i++) {
-            document.getElementById('prev-card-title-' + i).style.color = text;
-            document.getElementById('prev-card-price-' + i).style.color = primary;
-        }
-        // CTA кнопка
-        document.getElementById('prev-cta').style.background = primary;
-        // Подвал
-        document.getElementById('prev-footer').style.background = primaryDark;
+function updatePreview() {
+    const primary     = document.getElementById('color_primary').value;
+    const dark        = document.getElementById('color_primary_dark').value;
+    const accent      = document.getElementById('color_accent').value;
+    const bg          = document.getElementById('color_bg').value;
+    const card        = document.getElementById('color_card').value;
+    const text        = document.getElementById('color_text').value;
+    const textSec     = document.getElementById('color_text_secondary').value;
+    const headerText  = document.getElementById('color_header_text').value;
+    const footerText  = document.getElementById('color_footer_text').value;
+
+    // Шапка
+    document.getElementById('prev-header').style.background = primary;
+    document.getElementById('prev-logo').style.color = headerText;
+    ['prev-nav-1','prev-nav-2','prev-nav-3'].forEach(function(id) {
+        document.getElementById(id).style.color = headerText;
+    });
+    document.getElementById('prev-btn').style.background = accent;
+
+    // Тело
+    document.getElementById('prev-body').style.background = bg;
+    document.getElementById('prev-heading').style.color = text;
+    document.getElementById('prev-subtext').style.color = textSec;
+
+    // Карточки
+    for (let i = 1; i <= 3; i++) {
+        document.getElementById('prev-card-' + i).style.background = card;
+        document.getElementById('prev-card-title-' + i).style.color = text;
+        document.getElementById('prev-card-desc-' + i).style.color = textSec;
+        document.getElementById('prev-card-price-' + i).style.color = primary;
     }
 
-    fields.forEach(function(field) {
-        const input = document.getElementById(field.id);
-        const label = document.getElementById(field.label);
-        input.addEventListener('input', function() {
-            label.textContent = input.value;
-            updatePreview();
-        });
+    // CTA кнопка
+    document.getElementById('prev-cta').style.background = primary;
+
+    // Подвал
+    document.getElementById('prev-footer').style.background = dark;
+    document.getElementById('prev-footer-left').style.color = footerText;
+    document.getElementById('prev-footer-right').style.color = footerText;
+}
+
+colorFields.forEach(function(field) {
+    const input = document.getElementById(field.id);
+    const label = document.getElementById(field.val);
+    input.addEventListener('input', function() {
+        label.textContent = input.value;
+        updatePreview();
     });
+});
 </script>
 {% endblock %}
