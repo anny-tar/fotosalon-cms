@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Панель управления{% endblock %} — ФотоСалон</title>
+    <link rel="stylesheet" href="/static/css/panel.css">
+</head>
+<body class="panel-body">
+
+<div class="panel-layout">
+
+    <!-- Боковое меню -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <a href="/panel/">ФотоСалон</a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/panel/" class="nav-item {% block nav_dashboard %}{% endblock %}">
+                Дашборд
+            </a>
+            <div class="nav-group-title">Контент</div>
+            <a href="/panel/bookings/" class="nav-item {% block nav_bookings %}{% endblock %}">
+                Заявки
+                {% if pending_bookings_count %}
+                    <span class="badge">{{ pending_bookings_count }}</span>
+                {% endif %}
+            </a>
+            <a href="/panel/schedule/" class="nav-item {% block nav_schedule %}{% endblock %}">
+                Расписание
+            </a>
+            <a href="/panel/services/" class="nav-item {% block nav_services %}{% endblock %}">
+                Услуги
+            </a>
+            <a href="/panel/portfolio/" class="nav-item {% block nav_portfolio %}{% endblock %}">
+                Портфолио
+            </a>
+            <a href="/panel/products/" class="nav-item {% block nav_products %}{% endblock %}">
+                Товары
+            </a>
+            <a href="/panel/news/" class="nav-item {% block nav_news %}{% endblock %}">
+                Новости
+            </a>
+            <a href="/panel/reviews/" class="nav-item {% block nav_reviews %}{% endblock %}">
+                Отзывы
+                {% if pending_reviews_count %}
+                    <span class="badge">{{ pending_reviews_count }}</span>
+                {% endif %}
+            </a>
+            <a href="/panel/feedback/" class="nav-item {% block nav_feedback %}{% endblock %}">
+                Обратная связь
+                {% if unread_feedback_count %}
+                    <span class="badge">{{ unread_feedback_count }}</span>
+                {% endif %}
+            </a>
+            <div class="nav-group-title">Система</div>
+            {% if request.user.is_superuser %}
+            <a href="/panel/users/" class="nav-item {% block nav_users %}{% endblock %}">
+                Пользователи
+            </a>
+            <a href="/panel/settings/" class="nav-item {% block nav_settings %}{% endblock %}">
+                Настройки
+            </a>
+            {% endif %}
+        </nav>
+        <div class="sidebar-footer">
+            <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+            <a href="/panel/logout/">Выйти</a>
+        </div>
+    </aside>
+
+    <!-- Основной контент -->
+    <main class="panel-main">
+        <div class="panel-header">
+            <h1>{% block page_title %}{% endblock %}</h1>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="panel-content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+</div>
+
+<script src="/static/js/panel.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

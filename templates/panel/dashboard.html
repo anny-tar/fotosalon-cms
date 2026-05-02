@@ -1,0 +1,112 @@
+{% extends 'panel/base.html' %}
+
+{% block title %}Дашборд{% endblock %}
+{% block page_title %}Дашборд{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block content %}
+
+<!-- Счётчики -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ new_bookings_today }}</div>
+        <div class="stat-label">Новых заявок сегодня</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ bookings_this_month }}</div>
+        <div class="stat-label">Заявок за месяц</div>
+    </div>
+    <div class="stat-card {% if pending_reviews %}stat-card--warn{% endif %}">
+        <div class="stat-value">{{ pending_reviews }}</div>
+        <div class="stat-label">Отзывов на модерации</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ active_services }}</div>
+        <div class="stat-label">Активных услуг</div>
+    </div>
+    <div class="stat-card {% if unread_feedback %}stat-card--warn{% endif %}">
+        <div class="stat-value">{{ unread_feedback }}</div>
+        <div class="stat-label">Непрочитанных сообщений</div>
+    </div>
+</div>
+
+<!-- Предупреждения о низком остатке -->
+{% if low_stock %}
+<div class="alert alert-warning">
+    <strong>Внимание!</strong> Товары с низким остатком:
+    {% for product in low_stock %}
+        <a href="/panel/products/{{ product.id }}/edit/">{{ product.name }}</a>
+        ({{ product.quantity }} шт.){% if not forloop.last %},{% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- График заявок -->
+<div class="chart-section">
+    <div class="chart-header">
+        <h2>Заявки по дням</h2>
+        <form method="get" class="period-form">
+            <select name="days" onchange="this.form.submit()">
+                <option value="7" {% if period_days == 7 %}selected{% endif %}>7 дней</option>
+                <option value="30" {% if period_days == 30 %}selected{% endif %}>30 дней</option>
+                <option value="90" {% if period_days == 90 %}selected{% endif %}>90 дней</option>
+            </select>
+        </form>
+    </div>
+    <canvas id="bookingsChart"></canvas>
+</div>
+
+<!-- Топ услуг -->
+<div class="top-services">
+    <h2>Топ-3 популярных услуги</h2>
+    {% if top_services %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Услуга</th>
+                    <th>Заявок</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in top_services %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ service.name }}</td>
+                    <td>{{ service.bookings_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-data">Нет данных</p>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('bookingsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_data.labels|safe }},
+            datasets: [{
+                label: 'Заявки',
+                data: {{ chart_data.data|safe }},
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37,99,235,0.08)',
+                tension: 0.3,
+                fill: true,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+    });
+</script>
+{% endblock %}
