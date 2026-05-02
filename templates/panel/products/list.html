@@ -1,0 +1,105 @@
+{% extends 'panel/base.html' %}
+{% block title %}Товары{% endblock %}
+{% block page_title %}Товары{% endblock %}
+{% block nav_products %}active{% endblock %}
+
+{% block content %}
+
+<div class="toolbar">
+    <a href="/panel/products/create/" class="btn btn-primary">+ Добавить товар</a>
+    <a href="/panel/products/categories/" class="btn btn-secondary">Категории</a>
+    <a href="/panel/products/export/" class="btn btn-success">Экспорт Excel</a>
+    {% if low_stock_count %}
+        <span class="alert-inline">⚠️ Товаров с низким остатком: {{ low_stock_count }}</span>
+    {% endif %}
+</div>
+
+<!-- Фильтры -->
+<form method="get" class="filter-form">
+    <select name="category" onchange="this.form.submit()">
+        <option value="">Все категории</option>
+        {% for c in categories %}
+            <option value="{{ c.id }}"
+                {% if current_category == c.id|stringformat:'s' %}selected{% endif %}>
+                {{ c.name }}
+            </option>
+        {% endfor %}
+    </select>
+    <select name="in_stock" onchange="this.form.submit()">
+        <option value="">Любой остаток</option>
+        <option value="1" {% if in_stock == '1' %}selected{% endif %}>В наличии</option>
+        <option value="0" {% if in_stock == '0' %}selected{% endif %}>Нет в наличии</option>
+    </select>
+</form>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Артикул</th>
+            <th>Название</th>
+            <th>Категория</th>
+            <th>Цена</th>
+            <th>Остаток</th>
+            <th>Статус</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr {% if product.is_low_stock %}class="row-warning"{% endif %}>
+            <td>{{ product.article }}</td>
+            <td>
+                {% if product.thumbnail %}
+                    <img src="/media/{{ product.thumbnail }}"
+                         style="width:40px;height:40px;object-fit:cover;border-radius:4px">
+                {% endif %}
+                {{ product.name }}
+            </td>
+            <td>{{ product.category.name|default:'—' }}</td>
+            <td>{{ product.price }} ₽</td>
+            <td>
+                {{ product.quantity }}
+                {% if product.is_low_stock %}
+                    <span class="badge badge-warn">⚠ мало</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if product.is_in_stock %}
+                    <span class="badge badge-success">В наличии</span>
+                {% else %}
+                    <span class="badge badge-danger">Нет</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="/panel/products/{{ product.pk }}/edit/"
+                   class="btn btn-sm">Изменить</a>
+                <form method="post"
+                      action="/panel/products/{{ product.pk }}/delete/"
+                      style="display:inline"
+                      onsubmit="return confirm('Удалить товар?')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" class="no-data">Товаров нет</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if products.has_other_pages %}
+<div class="pagination">
+    {% if products.has_previous %}
+        <a href="?page={{ products.previous_page_number }}">&laquo;</a>
+    {% endif %}
+    <span>{{ products.number }} / {{ products.paginator.num_pages }}</span>
+    {% if products.has_next %}
+        <a href="?page={{ products.next_page_number }}">&raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}
