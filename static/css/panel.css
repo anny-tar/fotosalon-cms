@@ -315,6 +315,10 @@ a:hover { text-decoration: underline; }
     margin-bottom: 24px;
 }
 
+.chart-section canvas {
+    max-height: 200px;
+}
+
 .chart-header {
     display: flex;
     justify-content: space-between;
