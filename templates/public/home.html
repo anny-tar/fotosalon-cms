@@ -1,7 +1,34 @@
 {% extends 'public/base.html' %}
+{% load panel_tags %}
+
+{% block title %}{{ site_settings.site_name|default:'ФотоСалон' }}{% endblock %}
+
 {% block content %}
-<div class="container" style="padding:80px 24px;text-align:center">
-    <h1 class="section-title">Главная страница</h1>
-    <p class="section-subtitle">В разработке</p>
-</div>
+{% for section in sections %}
+    {% if section.template.template_name == 'banner' %}
+        {% include 'public/sections/banner.html' %}
+    {% elif section.template.template_name == 'services_grid' %}
+        {% include 'public/sections/services_grid.html' %}
+    {% elif section.template.template_name == 'portfolio_preview' %}
+        {% include 'public/sections/portfolio_preview.html' %}
+    {% elif section.template.template_name == 'reviews_block' %}
+        {% include 'public/sections/reviews_block.html' %}
+    {% elif section.template.template_name == 'promo' %}
+        {% include 'public/sections/promo.html' %}
+    {% elif section.template.template_name == 'booking_form_block' %}
+        {% include 'public/sections/booking_form_block.html' %}
+    {% endif %}
+{% empty %}
+    <!-- Заглушка если секции не настроены -->
+    <section class="section" style="text-align:center">
+        <div class="container">
+            <h1 class="section-title">{{ site_settings.site_name|default:'ФотоСалон' }}</h1>
+            <p class="section-subtitle">{{ site_settings.slogan|default:'Профессиональная фотография' }}</p>
+            <div style="margin-top:32px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+                <a href="/services/" class="btn-primary-pub">Наши услуги</a>
+                <a href="/booking/" class="btn-accent">Записаться</a>
+            </div>
+        </div>
+    </section>
+{% endfor %}
 {% endblock %}

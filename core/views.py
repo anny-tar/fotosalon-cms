@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import SiteSettings, ContactInfo, PageSection
 
@@ -43,7 +43,6 @@ def theme_css(request):
 
 
 def _base_context(request):
-    """Общий контекст для всех публичных страниц."""
     from services.models import Service
     return {
         'site_settings': SiteSettings.objects.first(),
@@ -53,22 +52,36 @@ def _base_context(request):
 
 
 def home(request):
+    from portfolio.models import PortfolioPhoto
+    from reviews.models import Review
+
     sections = PageSection.objects.filter(
         page='home', is_active=True
     ).select_related('template').order_by('order')
 
     ctx = _base_context(request)
     ctx['sections'] = sections
+    ctx['portfolio_preview'] = PortfolioPhoto.objects.filter(
+        is_active=True
+    ).order_by('?')[:6]
+    ctx['latest_reviews'] = Review.objects.filter(
+        is_approved=True, is_hidden=False
+    ).select_related('reply').order_by('-created_at')[:3]
     return render(request, 'public/home.html', ctx)
 
 
 def about(request):
+    from reviews.models import Review
+
     sections = PageSection.objects.filter(
         page='about', is_active=True
     ).select_related('template').order_by('order')
 
     ctx = _base_context(request)
     ctx['sections'] = sections
+    ctx['latest_reviews'] = Review.objects.filter(
+        is_approved=True, is_hidden=False
+    ).select_related('reply').order_by('-created_at')[:3]
     return render(request, 'public/about.html', ctx)
 
 

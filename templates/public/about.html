@@ -1,8 +1,25 @@
 {% extends 'public/base.html' %}
-{% block title %}О нас — {{ site_settings.site_name|default:'ФотоСалон' }}{% endblock %}
+{% load panel_tags %}
+
+{% block title %}О нас — {{ site_settings.site_name|default:'' }}{% endblock %}
+
 {% block content %}
-<div class="container" style="padding:80px 24px;text-align:center">
-    <h1 class="section-title">О нас</h1>
-    <p class="section-subtitle">В разработке</p>
-</div>
+{% for section in sections %}
+    {% if section.template.template_name == 'banner' %}
+        {% include 'public/sections/banner.html' %}
+    {% elif section.template.template_name == 'promo' %}
+        {% include 'public/sections/promo.html' %}
+    {% elif section.template.template_name == 'reviews_block' %}
+        {% include 'public/sections/reviews_block.html' %}
+    {% elif section.template.template_name == 'booking_form_block' %}
+        {% include 'public/sections/booking_form_block.html' %}
+    {% endif %}
+{% empty %}
+    <section class="section">
+        <div class="container" style="max-width:800px">
+            <h1 class="section-title">О нас</h1>
+            <p class="section-subtitle">Информация пока не добавлена.</p>
+        </div>
+    </section>
+{% endfor %}
 {% endblock %}

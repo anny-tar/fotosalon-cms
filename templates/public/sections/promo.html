@@ -1,0 +1,18 @@
+<section class="section-promo">
+    <div class="container">
+        <div class="promo-inner">
+            <div>
+                <h2 class="promo-title">
+                    {{ section.content.title|default:'Специальное предложение' }}
+                </h2>
+                <p class="promo-text">
+                    {{ section.content.text|default:'Запишитесь на фотосессию и получите скидку' }}
+                </p>
+            </div>
+            <a href="{{ section.content.btn_url|default:'/booking/' }}"
+               class="btn-accent btn-accent--lg">
+                {{ section.content.btn_text|default:'Узнать подробнее' }}
+            </a>
+        </div>
+    </div>
+</section>

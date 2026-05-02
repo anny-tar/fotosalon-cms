@@ -1,0 +1,29 @@
+<section class="section-banner" style="background: var(--primary)">
+    <div class="container">
+        <div class="banner-inner">
+            <div class="banner-content">
+                <h1 class="banner-title">
+                    {{ section.content.title|default:'Профессиональная фотография' }}
+                </h1>
+                <p class="banner-subtitle">
+                    {{ section.content.subtitle|default:'Портретные, семейные, свадебные и корпоративные съёмки' }}
+                </p>
+                <div style="display:flex;gap:12px;flex-wrap:wrap">
+                    <a href="{{ section.content.btn_url|default:'/booking/' }}"
+                       class="btn-accent btn-accent--lg">
+                        {{ section.content.btn_text|default:'Записаться' }}
+                    </a>
+                    <a href="{{ section.content.btn2_url|default:'/portfolio/' }}"
+                       class="btn-banner-outline">
+                        {{ section.content.btn2_text|default:'Смотреть портфолио' }}
+                    </a>
+                </div>
+            </div>
+            {% if section.content.image %}
+            <div class="banner-image">
+                <img src="/media/{{ section.content.image }}" alt="Баннер">
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>

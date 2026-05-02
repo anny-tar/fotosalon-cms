@@ -1,0 +1,20 @@
+<section class="section section--gray">
+    <div class="container" style="max-width:600px">
+        <div class="section-header">
+            <h2 class="section-title">
+                {{ section.content.title|default:'Записаться онлайн' }}
+            </h2>
+            <p class="section-subtitle">
+                {{ section.content.subtitle|default:'Оставьте заявку и мы свяжемся с вами' }}
+            </p>
+        </div>
+        <div class="card" style="padding:32px">
+            <p style="color:var(--color-text-secondary);margin-bottom:20px;font-size:15px">
+                Заполните полную форму записи — выберите услугу, дату и удобное время.
+            </p>
+            <a href="/booking/" class="btn-primary-pub" style="display:block;text-align:center">
+                Перейти к записи
+            </a>
+        </div>
+    </div>
+</section>
