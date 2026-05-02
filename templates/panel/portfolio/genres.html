@@ -1,0 +1,51 @@
+{% extends 'panel/base.html' %}
+{% block title %}Жанры портфолио{% endblock %}
+{% block page_title %}Жанры портфолио{% endblock %}
+{% block nav_portfolio %}active{% endblock %}
+
+{% block content %}
+
+<a href="/panel/portfolio/" class="btn btn-secondary">← Назад</a>
+
+<!-- Форма создания жанра -->
+<form method="post" action="/panel/portfolio/genres/create/" class="inline-form">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Название жанра" required>
+    <input type="text" name="slug" placeholder="slug (латиницей)" required>
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+
+<!-- Список жанров -->
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Slug</th>
+            <th>Фотографий</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for genre in genres %}
+        <tr>
+            <td>{{ genre.name }}</td>
+            <td>{{ genre.slug }}</td>
+            <td>{{ genre.photos.count }}</td>
+            <td>
+                <form method="post"
+                      action="/panel/portfolio/genres/{{ genre.pk }}/delete/"
+                      onsubmit="return confirm('Удалить жанр?')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" class="no-data">Жанров нет</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'panel/base.html' %}
+{% load panel_tags %}
+{% block title %}Портфолио{% endblock %}
+{% block page_title %}Портфолио{% endblock %}
+{% block nav_portfolio %}active{% endblock %}
+
+{% block content %}
+
+<div class="toolbar">
+    <a href="/panel/portfolio/genres/" class="btn btn-secondary">Управление жанрами</a>
+</div>
+
+<!-- Форма загрузки -->
+<details class="collapsible" open>
+    <summary>+ Загрузить фотографии</summary>
+    <form method="post" action="/panel/portfolio/upload/"
+          enctype="multipart/form-data" class="inline-form">
+        {% csrf_token %}
+        <select name="genre" required>
+            <option value="">Выберите жанр</option>
+            {% for g in genres %}
+                <option value="{{ g.id }}">{{ g.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="file" name="photos" multiple accept="image/*" required>
+        <button type="submit" class="btn btn-primary">Загрузить</button>
+    </form>
+</details>
+
+<!-- Фильтры -->
+<form method="get" class="filter-form">
+    <select name="genre" onchange="this.form.submit()">
+        <option value="">Все жанры</option>
+        {% for g in genres %}
+            <option value="{{ g.id }}"
+                {% if current_genre == g.id|stringformat:'s' %}selected{% endif %}>
+                {{ g.name }}
+            </option>
+        {% endfor %}
+    </select>
+    <select name="sort" onchange="this.form.submit()">
+        <option value="asc" {% if sort == 'asc' %}selected{% endif %}>А → Я</option>
+        <option value="desc" {% if sort == 'desc' %}selected{% endif %}>Я → А</option>
+    </select>
+</form>
+
+<!-- Галерея -->
+<div class="photo-grid">
+    {% for photo in photos %}
+    <div class="photo-card {% if not photo.is_active %}photo-card--inactive{% endif %}">
+        <img src="/media/{{ photo.thumbnail }}" alt="{{ photo.filename }}"
+             loading="lazy">
+        <div class="photo-info">
+            <span class="photo-filename">{{ photo.filename }}</span>
+            <span class="photo-genre">{{ photo.genre.name }}</span>
+        </div>
+        <div class="photo-actions">
+            <form method="post" action="/panel/portfolio/{{ photo.pk }}/toggle/"
+                  style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-xs
+                    {% if photo.is_active %}btn-warning{% else %}btn-success{% endif %}">
+                    {% if photo.is_active %}Скрыть{% else %}Показать{% endif %}
+                </button>
+            </form>
+            <form method="post" action="/panel/portfolio/{{ photo.pk }}/delete/"
+                  style="display:inline"
+                  onsubmit="return confirm('Удалить фото безвозвратно?')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-xs btn-danger">Удалить</button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <p class="no-data">Фотографий нет</p>
+    {% endfor %}
+</div>
+
+<!-- Пагинация -->
+{% if photos.has_other_pages %}
+<div class="pagination">
+    {% if photos.has_previous %}
+        <a href="?page={{ photos.previous_page_number }}&genre={{ current_genre }}&sort={{ sort }}">&laquo;</a>
+    {% endif %}
+    <span>{{ photos.number }} / {{ photos.paginator.num_pages }}</span>
+    {% if photos.has_next %}
+        <a href="?page={{ photos.next_page_number }}&genre={{ current_genre }}&sort={{ sort }}">&raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

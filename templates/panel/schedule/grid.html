@@ -1,0 +1,106 @@
+{% extends 'panel/base.html' %}
+{% load panel_tags %}
+{% block title %}Расписание{% endblock %}
+{% block page_title %}Расписание{% endblock %}
+{% block nav_schedule %}active{% endblock %}
+
+{% block content %}
+
+<!-- Навигация по неделям -->
+<div class="schedule-nav">
+    <a href="?week={{ prev_week }}" class="btn btn-secondary">← Предыдущая неделя</a>
+    <span class="schedule-week-label">
+        {{ week_days.0|date:'d.m.Y' }} — {{ week_days.6|date:'d.m.Y' }}
+    </span>
+    <a href="?week={{ next_week }}" class="btn btn-secondary">Следующая неделя →</a>
+    <a href="?week=0" class="btn btn-primary">Сегодня</a>
+</div>
+
+<!-- Форма создания одного слота -->
+<details class="collapsible">
+    <summary>+ Добавить слот</summary>
+    <form method="post" action="/panel/schedule/slot/create/" class="inline-form">
+        {% csrf_token %}
+        <input type="date" name="date" required>
+        <input type="time" name="time_start" required placeholder="Начало">
+        <input type="time" name="time_end" required placeholder="Конец">
+        <button type="submit" class="btn btn-primary">Создать</button>
+    </form>
+</details>
+
+<!-- Форма массовой генерации -->
+<details class="collapsible">
+    <summary>⚡ Массовая генерация слотов</summary>
+    <form method="post" action="/panel/schedule/generate/" class="inline-form">
+        {% csrf_token %}
+        <label>С <input type="date" name="date_from" required></label>
+        <label>По <input type="date" name="date_to" required></label>
+        <label>Начало <input type="time" name="time_start" required></label>
+        <label>Конец <input type="time" name="time_end" required></label>
+        <label>
+            <input type="checkbox" name="skip_weekends" checked>
+            Пропускать выходные
+        </label>
+        <button type="submit" class="btn btn-primary">Сгенерировать</button>
+    </form>
+</details>
+
+<!-- Сетка расписания -->
+<div class="schedule-grid">
+    {% for day in week_days %}
+    <div class="schedule-day {% if day == today %}schedule-day--today{% endif %}">
+        <div class="schedule-day-header">
+            <span class="day-name">{{ day|date:'D' }}</span>
+            <span class="day-date">{{ day|date:'d.m' }}</span>
+        </div>
+        <div class="schedule-slots">
+            {% for slot in slots_by_date|get_item:day %}
+            <div class="slot-card
+                {% if slot.is_blocked %}slot--blocked
+                {% elif slot.is_booked %}slot--booked
+                {% else %}slot--free{% endif %}">
+
+                <div class="slot-time">
+                    {{ slot.time_start|time:'H:i' }}–{{ slot.time_end|time:'H:i' }}
+                </div>
+
+                {% if slot.is_blocked %}
+                    <div class="slot-reason">{{ slot.block_reason|default:'Заблокирован' }}</div>
+                {% elif slot.is_booked %}
+                    <div class="slot-booked-label">Занят</div>
+                {% endif %}
+
+                <div class="slot-actions">
+                    <!-- Блокировка/разблокировка -->
+                    <form method="post" action="/panel/schedule/slot/{{ slot.pk }}/toggle/"
+                          style="display:inline">
+                        {% csrf_token %}
+                        {% if slot.is_blocked %}
+                            <button type="submit" class="btn btn-xs btn-success">Разблокировать</button>
+                        {% else %}
+                            <input type="text" name="block_reason"
+                                   placeholder="Причина" style="width:90px;font-size:11px">
+                            <button type="submit" class="btn btn-xs btn-warning">Блок</button>
+                        {% endif %}
+                    </form>
+
+                    <!-- Удаление -->
+                    {% if not slot.is_booked %}
+                    <form method="post" action="/panel/schedule/slot/{{ slot.pk }}/delete/"
+                          style="display:inline"
+                          onsubmit="return confirm('Удалить слот?')">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-xs btn-danger">✕</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="slot-empty">Нет слотов</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
