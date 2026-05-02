@@ -42,18 +42,17 @@
 
     <h3 style="margin: 24px 0 16px">Цветовая схема</h3>
     <p style="color:#6b7280;font-size:13px;margin-bottom:16px">
-        Цвета применяются на публичной части сайта и в административной панели.
+        Цвета применяются на публичной части сайта.
     </p>
+
     <div class="form-grid">
         <div class="form-group">
             <label>Основной цвет</label>
             <div style="display:flex;gap:8px;align-items:center">
-                <input type="color" name="color_primary"
-                       id="color_primary"
+                <input type="color" name="color_primary" id="color_primary"
                        value="{{ settings.color_primary|default:'#2563eb' }}"
                        style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
-                <span id="color_primary_val"
-                      style="font-size:13px;color:#6b7280">
+                <span id="color_primary_val" style="font-size:13px;color:#6b7280">
                     {{ settings.color_primary|default:'#2563eb' }}
                 </span>
             </div>
@@ -61,12 +60,10 @@
         <div class="form-group">
             <label>Тёмный акцент</label>
             <div style="display:flex;gap:8px;align-items:center">
-                <input type="color" name="color_primary_dark"
-                       id="color_primary_dark"
+                <input type="color" name="color_primary_dark" id="color_primary_dark"
                        value="{{ settings.color_primary_dark|default:'#1d4ed8' }}"
                        style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
-                <span id="color_primary_dark_val"
-                      style="font-size:13px;color:#6b7280">
+                <span id="color_primary_dark_val" style="font-size:13px;color:#6b7280">
                     {{ settings.color_primary_dark|default:'#1d4ed8' }}
                 </span>
             </div>
@@ -74,12 +71,10 @@
         <div class="form-group">
             <label>Акцентный цвет</label>
             <div style="display:flex;gap:8px;align-items:center">
-                <input type="color" name="color_accent"
-                       id="color_accent"
+                <input type="color" name="color_accent" id="color_accent"
                        value="{{ settings.color_accent|default:'#f59e0b' }}"
                        style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
-                <span id="color_accent_val"
-                      style="font-size:13px;color:#6b7280">
+                <span id="color_accent_val" style="font-size:13px;color:#6b7280">
                     {{ settings.color_accent|default:'#f59e0b' }}
                 </span>
             </div>
@@ -87,12 +82,10 @@
         <div class="form-group">
             <label>Цвет фона</label>
             <div style="display:flex;gap:8px;align-items:center">
-                <input type="color" name="color_bg"
-                       id="color_bg"
+                <input type="color" name="color_bg" id="color_bg"
                        value="{{ settings.color_bg|default:'#f9fafb' }}"
                        style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
-                <span id="color_bg_val"
-                      style="font-size:13px;color:#6b7280">
+                <span id="color_bg_val" style="font-size:13px;color:#6b7280">
                     {{ settings.color_bg|default:'#f9fafb' }}
                 </span>
             </div>
@@ -100,35 +93,125 @@
         <div class="form-group">
             <label>Цвет текста</label>
             <div style="display:flex;gap:8px;align-items:center">
-                <input type="color" name="color_text"
-                       id="color_text"
+                <input type="color" name="color_text" id="color_text"
                        value="{{ settings.color_text|default:'#111827' }}"
                        style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
-                <span id="color_text_val"
-                      style="font-size:13px;color:#6b7280">
+                <span id="color_text_val" style="font-size:13px;color:#6b7280">
                     {{ settings.color_text|default:'#111827' }}
                 </span>
             </div>
         </div>
     </div>
 
-    <!-- Предпросмотр цветов -->
-    <div style="display:flex;gap:8px;margin-bottom:24px;margin-top:8px">
-        <div id="preview_primary"
-             style="width:40px;height:40px;border-radius:6px;
-                    background:{{ settings.color_primary|default:'#2563eb' }}"></div>
-        <div id="preview_primary_dark"
-             style="width:40px;height:40px;border-radius:6px;
-                    background:{{ settings.color_primary_dark|default:'#1d4ed8' }}"></div>
-        <div id="preview_accent"
-             style="width:40px;height:40px;border-radius:6px;
-                    background:{{ settings.color_accent|default:'#f59e0b' }}"></div>
-        <div id="preview_bg"
-             style="width:40px;height:40px;border-radius:6px;border:1px solid #e5e7eb;
-                    background:{{ settings.color_bg|default:'#f9fafb' }}"></div>
-        <div id="preview_text"
-             style="width:40px;height:40px;border-radius:6px;
-                    background:{{ settings.color_text|default:'#111827' }}"></div>
+    <!-- Предпросмотр -->
+    <h3 style="margin: 24px 0 12px">Предпросмотр</h3>
+    <div id="preview-box" style="
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        border: 1px solid #e5e7eb;
+        margin-bottom: 24px;
+    ">
+        <!-- Шапка сайта -->
+        <div id="prev-header" style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            background: {{ settings.color_primary|default:'#2563eb' }};
+        ">
+            <span id="prev-logo" style="
+                color: #fff;
+                font-weight: 700;
+                font-size: 18px;
+            ">{{ settings.site_name|default:'ФотоСалон' }}</span>
+            <div style="display:flex;gap:16px">
+                <span style="color:rgba(255,255,255,0.85);font-size:13px">Услуги</span>
+                <span style="color:rgba(255,255,255,0.85);font-size:13px">Портфолио</span>
+                <span style="color:rgba(255,255,255,0.85);font-size:13px">Контакты</span>
+            </div>
+            <div id="prev-btn" style="
+                background: {{ settings.color_accent|default:'#f59e0b' }};
+                color: #fff;
+                padding: 7px 16px;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: 600;
+            ">Записаться</div>
+        </div>
+
+        <!-- Тело страницы -->
+        <div id="prev-body" style="
+            background: {{ settings.color_bg|default:'#f9fafb' }};
+            padding: 28px 24px;
+        ">
+            <!-- Заголовок -->
+            <div style="margin-bottom:20px">
+                <h2 id="prev-heading" style="
+                    font-size: 22px;
+                    font-weight: 700;
+                    margin-bottom: 8px;
+                    color: {{ settings.color_text|default:'#111827' }};
+                ">Профессиональная фотография</h2>
+                <p id="prev-text" style="
+                    color: {{ settings.color_text|default:'#111827' }};
+                    opacity: 0.7;
+                    font-size: 14px;
+                    line-height: 1.6;
+                ">Портретные, семейные, детские и свадебные съёмки. Запишитесь онлайн в любое время.</p>
+            </div>
+
+            <!-- Карточки услуг -->
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+                {% for service_name in "Портретная,Семейная,Свадебная"|split:"," %}
+                <div style="
+                    background: #fff;
+                    border-radius: 8px;
+                    padding: 14px;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+                ">
+                    <div id="prev-card-title-{{ forloop.counter }}" style="
+                        font-weight: 600;
+                        font-size: 14px;
+                        margin-bottom: 4px;
+                        color: {{ settings.color_text|default:'#111827' }};
+                    ">{{ service_name }} съёмка</div>
+                    <div id="prev-card-price-{{ forloop.counter }}" style="
+                        font-size: 13px;
+                        color: {{ settings.color_primary|default:'#2563eb' }};
+                        font-weight: 500;
+                    ">от 3 000 ₽</div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Кнопка -->
+            <div id="prev-cta" style="
+                display: inline-block;
+                background: {{ settings.color_primary|default:'#2563eb' }};
+                color: #fff;
+                padding: 10px 24px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 14px;
+            ">Смотреть все услуги →</div>
+        </div>
+
+        <!-- Подвал -->
+        <div id="prev-footer" style="
+            background: {{ settings.color_primary_dark|default:'#1d4ed8' }};
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        ">
+            <span style="color:rgba(255,255,255,0.8);font-size:12px">
+                © 2026 {{ settings.site_name|default:'ФотоСалон' }}
+            </span>
+            <span style="color:rgba(255,255,255,0.8);font-size:12px">
+                +7 (000) 000-00-00
+            </span>
+        </div>
     </div>
 
     <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -138,27 +221,47 @@
 
 {% block extra_js %}
 <script>
-    // Обновляем предпросмотр и подпись при выборе цвета
-    const colorFields = [
-        { input: 'color_primary', val: 'color_primary_val', preview: 'preview_primary' },
-        { input: 'color_primary_dark', val: 'color_primary_dark_val', preview: 'preview_primary_dark' },
-        { input: 'color_accent', val: 'color_accent_val', preview: 'preview_accent' },
-        { input: 'color_bg', val: 'color_bg_val', preview: 'preview_bg' },
-        { input: 'color_text', val: 'color_text_val', preview: 'preview_text' },
+    const fields = [
+        { id: 'color_primary',      label: 'color_primary_val' },
+        { id: 'color_primary_dark', label: 'color_primary_dark_val' },
+        { id: 'color_accent',       label: 'color_accent_val' },
+        { id: 'color_bg',           label: 'color_bg_val' },
+        { id: 'color_text',         label: 'color_text_val' },
     ];
 
-    colorFields.forEach(function(field) {
-        const input = document.getElementById(field.input);
-        const val = document.getElementById(field.val);
-        const preview = document.getElementById(field.preview);
+    function updatePreview() {
+        const primary     = document.getElementById('color_primary').value;
+        const primaryDark = document.getElementById('color_primary_dark').value;
+        const accent      = document.getElementById('color_accent').value;
+        const bg          = document.getElementById('color_bg').value;
+        const text        = document.getElementById('color_text').value;
+
+        // Шапка
+        document.getElementById('prev-header').style.background = primary;
+        // Кнопка записаться
+        document.getElementById('prev-btn').style.background = accent;
+        // Тело
+        document.getElementById('prev-body').style.background = bg;
+        // Заголовок и текст
+        document.getElementById('prev-heading').style.color = text;
+        document.getElementById('prev-text').style.color = text;
+        // Карточки
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById('prev-card-title-' + i).style.color = text;
+            document.getElementById('prev-card-price-' + i).style.color = primary;
+        }
+        // CTA кнопка
+        document.getElementById('prev-cta').style.background = primary;
+        // Подвал
+        document.getElementById('prev-footer').style.background = primaryDark;
+    }
+
+    fields.forEach(function(field) {
+        const input = document.getElementById(field.id);
+        const label = document.getElementById(field.label);
         input.addEventListener('input', function() {
-            val.textContent = input.value;
-            preview.style.background = input.value;
-            // Применяем цвет сразу на странице для предпросмотра
-            document.documentElement.style.setProperty(
-                '--' + field.input.replace('color_', '').replace('_', '-'),
-                input.value
-            );
+            label.textContent = input.value;
+            updatePreview();
         });
     });
 </script>
