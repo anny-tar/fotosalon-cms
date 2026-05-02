@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, F
 from django.utils import timezone
 from datetime import timedelta
 
@@ -10,7 +11,6 @@ from reviews.models import Review
 from services.models import Service
 from products.models import Product
 from feedback.models import FeedbackMessage
-from django.db.models import F
 
 
 @panel_required
@@ -54,7 +54,7 @@ def dashboard(request):
 
     # Товары с низким остатком
     low_stock = Product.objects.filter(
-        quantity__lte=models.F('min_quantity')
+        quantity__lte=F('min_quantity')
     ).select_related('category')
 
     context = {
