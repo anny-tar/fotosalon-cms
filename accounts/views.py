@@ -101,7 +101,7 @@ def _get_chart_data(date_from, date_to):
 
 def panel_login(request):
     if request.user.is_authenticated and request.user.is_staff:
-        return redirect('panel:dashboard')
+        return redirect('panel_dashboard')
 
     error = None
     if request.method == 'POST':
@@ -110,7 +110,7 @@ def panel_login(request):
         user = authenticate(request, username=username, password=password)
         if user and user.is_staff:
             login(request, user)
-            return redirect('panel:dashboard')
+            return redirect('panel_dashboard')
         else:
             error = 'Неверный логин или пароль, либо нет доступа к панели.'
 
@@ -120,4 +120,4 @@ def panel_login(request):
 @login_required(login_url='/panel/login/')
 def panel_logout(request):
     logout(request)
-    return redirect('panel:login')
+    return redirect('panel_login')

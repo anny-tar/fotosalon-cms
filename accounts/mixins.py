@@ -4,7 +4,6 @@ from functools import wraps
 
 
 def panel_required(view_func):
-    """Доступ только для авторизованных сотрудников (staff)."""
     @wraps(view_func)
     @login_required(login_url='/panel/login/')
     def wrapper(request, *args, **kwargs):
@@ -15,7 +14,6 @@ def panel_required(view_func):
 
 
 def admin_required(view_func):
-    """Доступ только для администраторов (superuser)."""
     @wraps(view_func)
     @login_required(login_url='/panel/login/')
     def wrapper(request, *args, **kwargs):

@@ -1,0 +1,105 @@
+{% extends 'panel/base.html' %}
+{% block title %}Заявка #{{ booking.id }}{% endblock %}
+{% block page_title %}Заявка #{{ booking.id }}{% endblock %}
+{% block nav_bookings %}active{% endblock %}
+
+{% block content %}
+
+<a href="{% url 'bookings_panel:list' %}" class="btn btn-secondary">← Назад к списку</a>
+
+<div class="detail-grid">
+
+    <!-- Данные клиента -->
+    <div class="detail-card">
+        <h2>Данные клиента</h2>
+        <dl>
+            <dt>Имя</dt><dd>{{ booking.client_name }}</dd>
+            <dt>Телефон</dt><dd>{{ booking.client_phone }}</dd>
+            <dt>Email</dt><dd>{{ booking.client_email }}</dd>
+            <dt>Услуга</dt><dd>{{ booking.service.name }}</dd>
+            <dt>Дата</dt><dd>{{ booking.slot.date|date:'d.m.Y' }}</dd>
+            <dt>Время</dt><dd>{{ booking.slot.time_start|time:'H:i' }} — {{ booking.slot.time_end|time:'H:i' }}</dd>
+            <dt>Комментарий</dt><dd>{{ booking.comment|default:'—' }}</dd>
+            <dt>Создана</dt><dd>{{ booking.created_at|date:'d.m.Y H:i' }}</dd>
+        </dl>
+    </div>
+
+    <!-- Смена статуса -->
+    <div class="detail-card">
+        <h2>Статус: <span class="status-badge status-{{ booking.status }}">{{ booking.get_status_display }}</span></h2>
+        <form method="post" action="{% url 'bookings_panel:change_status' booking.pk %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Новый статус</label>
+                <select name="status">
+                    {% for val, label in status_choices %}
+                        <option value="{{ val }}" {% if booking.status == val %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Примечание менеджера</label>
+                <textarea name="manager_note" rows="3">{{ booking.manager_note }}</textarea>
+            </div>
+            <div class="form-group notify-checkbox" id="notifyBlock">
+                <label>
+                    <input type="checkbox" name="send_notify" checked>
+                    Отправить уведомление клиенту
+                </label>
+                <small>Доступно при статусах: Подтверждена, Отменена</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+    </div>
+
+</div>
+
+<!-- История изменений -->
+<div class="detail-card">
+    <h2>История изменений</h2>
+    {% if history %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Было</th>
+                <th>Стало</th>
+                <th>Кто изменил</th>
+                <th>Клиент уведомлён</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in history %}
+            <tr>
+                <td>{{ h.changed_at|date:'d.m.Y H:i' }}</td>
+                <td><span class="status-badge status-{{ h.old_status }}">{{ h.get_old_status_display }}</span></td>
+                <td><span class="status-badge status-{{ h.new_status }}">{{ h.get_new_status_display }}</span></td>
+                <td>{{ h.changed_by.get_full_name|default:h.changed_by.username }}</td>
+                <td>{% if h.client_notified %}✅{% else %}—{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="no-data">История изменений пуста</p>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Показываем чекбокс уведомления только для нужных статусов
+    const notifyStatuses = {{ notify_statuses|safe }};
+    const select = document.querySelector('select[name="status"]');
+    const notifyBlock = document.getElementById('notifyBlock');
+
+    function toggleNotify() {
+        notifyBlock.style.display = notifyStatuses.includes(select.value) ? 'block' : 'none';
+    }
+    select.addEventListener('change', toggleNotify);
+    toggleNotify();
+</script>
+{% endblock %}
