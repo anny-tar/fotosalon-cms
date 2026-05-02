@@ -47,7 +47,10 @@ a:hover { text-decoration: underline; }
 .panel-header {
     background: #fff;
     border-bottom: 1px solid var(--gray-200);
-    padding: 16px 24px;
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -80,8 +83,12 @@ a:hover { text-decoration: underline; }
 }
 
 .sidebar-logo {
-    padding: 20px 16px;
+    padding: 0 16px;
+    height: 64px;
+    display: flex;
+    align-items: center;
     border-bottom: 1px solid rgba(255,255,255,0.15);
+    flex-shrink: 0;
 }
 
 .sidebar-logo a {
