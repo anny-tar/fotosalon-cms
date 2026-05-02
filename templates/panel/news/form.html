@@ -1,0 +1,87 @@
+{% extends 'panel/base.html' %}
+{% block title %}{% if news %}Изменить новость{% else %}Новая новость{% endif %}{% endblock %}
+{% block page_title %}{% if news %}Изменить новость{% else %}Добавить новость{% endif %}{% endblock %}
+{% block nav_news %}active{% endblock %}
+
+{% block content %}
+
+<a href="/panel/news/" class="btn btn-secondary">← Назад</a>
+
+<form method="post" enctype="multipart/form-data" class="detail-card">
+    {% csrf_token %}
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Заголовок *</label>
+            <input type="text" name="title"
+                   value="{{ news.title|default:'' }}" required>
+        </div>
+        <div class="form-group">
+            <label>Категория</label>
+            <select name="category">
+                <option value="">Без категории</option>
+                {% for c in categories %}
+                    <option value="{{ c.id }}"
+                        {% if news.category_id == c.id %}selected{% endif %}>
+                        {{ c.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="is_published"
+                    {% if news.is_published %}checked{% endif %}>
+                Опубликовать
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Текст новости *</label>
+        <textarea name="content" rows="10">{{ news.content|default:'' }}</textarea>
+    </div>
+
+    <!-- SEO -->
+    <details class="collapsible">
+        <summary>SEO-поля</summary>
+        <div class="form-group">
+            <label>Meta title</label>
+            <input type="text" name="meta_title"
+                   value="{{ news.meta_title|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Meta description</label>
+            <textarea name="meta_description" rows="2">{{ news.meta_description|default:'' }}</textarea>
+        </div>
+    </details>
+
+    <!-- Фотографии -->
+    {% if photos %}
+    <div class="form-group">
+        <label>Текущие фотографии</label>
+        <div class="photo-grid">
+            {% for photo in photos %}
+            <div class="photo-card">
+                <img src="/media/{{ photo.thumbnail }}"
+                     style="width:80px;height:80px;object-fit:cover">
+                <form method="post"
+                      action="/panel/news/{{ news.pk }}/photo/delete/"
+                      onsubmit="return confirm('Удалить фото?')">
+                    {% csrf_token %}
+                    <input type="hidden" name="photo_id" value="{{ photo.pk }}">
+                    <button type="submit" class="btn btn-xs btn-danger">✕</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="form-group">
+        <label>Добавить фотографии</label>
+        <input type="file" name="photos" multiple accept="image/*">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+{% endblock %}

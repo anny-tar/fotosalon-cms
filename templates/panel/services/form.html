@@ -1,0 +1,56 @@
+{% extends 'panel/base.html' %}
+{% block title %}{% if service %}Изменить услугу{% else %}Новая услуга{% endif %}{% endblock %}
+{% block page_title %}{% if service %}Изменить услугу{% else %}Добавить услугу{% endif %}{% endblock %}
+{% block nav_services %}active{% endblock %}
+
+{% block content %}
+
+<a href="/panel/services/" class="btn btn-secondary">← Назад</a>
+
+<form method="post" enctype="multipart/form-data" class="detail-card">
+    {% csrf_token %}
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Название *</label>
+            <input type="text" name="name"
+                   value="{{ service.name|default:'' }}" required>
+        </div>
+        <div class="form-group">
+            <label>Цена (₽) *</label>
+            <input type="number" name="price" step="0.01"
+                   value="{{ service.price|default:'0' }}" required>
+        </div>
+        <div class="form-group">
+            <label>Длительность (минуты)</label>
+            <input type="number" name="duration_minutes" min="1"
+                   value="{{ service.duration_minutes|default:'60' }}">
+        </div>
+        <div class="form-group">
+            <label>Порядок</label>
+            <input type="number" name="order"
+                   value="{{ service.order|default:'0' }}">
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="is_active"
+                    {% if service is None or service.is_active %}checked{% endif %}>
+                Активна
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Описание</label>
+        <textarea name="description" rows="5">{{ service.description|default:'' }}</textarea>
+    </div>
+    <div class="form-group">
+        <label>Фото</label>
+        {% if service.image %}
+            <img src="/media/{{ service.image }}"
+                 style="width:100px;height:100px;object-fit:cover;border-radius:4px;display:block;margin-bottom:8px">
+        {% endif %}
+        <input type="file" name="image" accept="image/*">
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+{% endblock %}

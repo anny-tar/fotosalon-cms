@@ -1,0 +1,87 @@
+{% extends 'panel/base.html' %}
+{% block title %}Новости{% endblock %}
+{% block page_title %}Новости{% endblock %}
+{% block nav_news %}active{% endblock %}
+
+{% block content %}
+
+<div class="toolbar">
+    <a href="/panel/news/create/" class="btn btn-primary">+ Добавить новость</a>
+    <a href="/panel/news/categories/" class="btn btn-secondary">Категории</a>
+</div>
+
+<form method="get" class="filter-form">
+    <select name="category" onchange="this.form.submit()">
+        <option value="">Все категории</option>
+        {% for c in categories %}
+            <option value="{{ c.id }}"
+                {% if current_category == c.id|stringformat:'s' %}selected{% endif %}>
+                {{ c.name }}
+            </option>
+        {% endfor %}
+    </select>
+    <select name="published" onchange="this.form.submit()">
+        <option value="">Все</option>
+        <option value="1" {% if is_published == '1' %}selected{% endif %}>Опубликованные</option>
+        <option value="0" {% if is_published == '0' %}selected{% endif %}>Черновики</option>
+    </select>
+</form>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Заголовок</th>
+            <th>Категория</th>
+            <th>Автор</th>
+            <th>Дата</th>
+            <th>Статус</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in news %}
+        <tr>
+            <td>{{ item.title }}</td>
+            <td>{{ item.category.name|default:'—' }}</td>
+            <td>{{ item.author.get_full_name|default:item.author.username }}</td>
+            <td>{{ item.published_at|date:'d.m.Y' }}</td>
+            <td>
+                {% if item.is_published %}
+                    <span class="badge badge-success">Опубликована</span>
+                {% else %}
+                    <span class="badge badge-danger">Черновик</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="/panel/news/{{ item.pk }}/edit/"
+                   class="btn btn-sm">Изменить</a>
+                <form method="post"
+                      action="/panel/news/{{ item.pk }}/delete/"
+                      style="display:inline"
+                      onsubmit="return confirm('Удалить новость?')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="no-data">Новостей нет</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if news.has_other_pages %}
+<div class="pagination">
+    {% if news.has_previous %}
+        <a href="?page={{ news.previous_page_number }}">&laquo;</a>
+    {% endif %}
+    <span>{{ news.number }} / {{ news.paginator.num_pages }}</span>
+    {% if news.has_next %}
+        <a href="?page={{ news.next_page_number }}">&raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

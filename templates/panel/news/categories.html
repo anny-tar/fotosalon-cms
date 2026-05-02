@@ -1,0 +1,42 @@
+{% extends 'panel/base.html' %}
+{% block title %}Категории новостей{% endblock %}
+{% block page_title %}Категории новостей{% endblock %}
+{% block nav_news %}active{% endblock %}
+
+{% block content %}
+
+<a href="/panel/news/" class="btn btn-secondary">← Назад</a>
+
+<form method="post" action="/panel/news/categories/create/" class="inline-form">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Название" required>
+    <input type="text" name="slug" placeholder="slug (латиницей)" required>
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+
+<table class="data-table">
+    <thead>
+        <tr><th>Название</th><th>Slug</th><th>Новостей</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for cat in categories %}
+        <tr>
+            <td>{{ cat.name }}</td>
+            <td>{{ cat.slug }}</td>
+            <td>{{ cat.news_set.count }}</td>
+            <td>
+                <form method="post"
+                      action="/panel/news/categories/{{ cat.pk }}/delete/"
+                      onsubmit="return confirm('Удалить категорию?')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="no-data">Категорий нет</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

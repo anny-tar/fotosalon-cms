@@ -1,0 +1,71 @@
+{% extends 'panel/base.html' %}
+{% block title %}Услуги{% endblock %}
+{% block page_title %}Услуги{% endblock %}
+{% block nav_services %}active{% endblock %}
+
+{% block content %}
+
+<div class="toolbar">
+    <a href="/panel/services/create/" class="btn btn-primary">+ Добавить услугу</a>
+</div>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Порядок</th>
+            <th>Название</th>
+            <th>Цена</th>
+            <th>Длительность</th>
+            <th>Статус</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for service in services %}
+        <tr>
+            <td>{{ service.order }}</td>
+            <td>
+                {% if service.image %}
+                    <img src="/media/{{ service.image }}"
+                         style="width:40px;height:40px;object-fit:cover;border-radius:4px">
+                {% endif %}
+                {{ service.name }}
+            </td>
+            <td>{{ service.price }} ₽</td>
+            <td>{{ service.duration_minutes }} мин.</td>
+            <td>
+                {% if service.is_active %}
+                    <span class="badge badge-success">Активна</span>
+                {% else %}
+                    <span class="badge badge-danger">Скрыта</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="/panel/services/{{ service.pk }}/edit/"
+                   class="btn btn-sm">Изменить</a>
+                <form method="post"
+                      action="/panel/services/{{ service.pk }}/toggle/"
+                      style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-warning">
+                        {% if service.is_active %}Скрыть{% else %}Показать{% endif %}
+                    </button>
+                </form>
+                <form method="post"
+                      action="/panel/services/{{ service.pk }}/delete/"
+                      style="display:inline"
+                      onsubmit="return confirm('Удалить услугу?')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="no-data">Услуг нет</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
