@@ -13,13 +13,6 @@
 
     <aside class="sidebar">
         <div class="sidebar-logo">
-            {% if site_settings.logo %}
-                <a href="/panel/" style="display:flex;align-items:center;gap:10px">
-                    <img src="/media/{{ site_settings.logo }}"
-                         style="height:36px;width:auto;object-fit:contain">
-                    <span>{{ site_settings.site_name|default:''}}</span>
-                </a>
-            {% else %}
                 <a href="/panel/">{{ site_settings.site_name|default:'' }}</a>
             {% endif %}
         </div>

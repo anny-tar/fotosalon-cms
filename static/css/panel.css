@@ -1,6 +1,13 @@
 /* ===== ПЕРЕМЕННЫЕ ===== */
 :root {
-    /* Системные цвета — не меняются */
+    /* Переопределяются через /theme.css */
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --accent: #f59e0b;
+    --color-bg: #f9fafb;
+    --color-text: #111827;
+
+    /* Системные — не меняются */
     --success: #16a34a;
     --warning: #d97706;
     --danger: #dc2626;
@@ -10,7 +17,6 @@
     --gray-300: #d1d5db;
     --gray-600: #4b5563;
     --gray-700: #374151;
-    --gray-900: #111827;
     --sidebar-width: 240px;
 }
 
@@ -20,8 +26,8 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 14px;
-    color: var(--gray-900);
-    background: var(--gray-50);
+    color: var(--color-text);
+    background: var(--color-bg);
 }
 
 a { color: var(--primary); text-decoration: none; }
@@ -39,6 +45,7 @@ a:hover { text-decoration: underline; }
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: var(--color-bg);
 }
 
 .panel-header {
@@ -53,7 +60,7 @@ a:hover { text-decoration: underline; }
 .panel-header h1 {
     font-size: 20px;
     font-weight: 600;
-    color: var(--gray-900);
+    color: var(--color-text);
 }
 
 .panel-content {
@@ -64,7 +71,7 @@ a:hover { text-decoration: underline; }
 /* ===== SIDEBAR ===== */
 .sidebar {
     width: var(--sidebar-width);
-    background: var(--gray-900);
+    background: var(--primary-dark);
     color: #fff;
     position: fixed;
     top: 0;
@@ -78,7 +85,7 @@ a:hover { text-decoration: underline; }
 
 .sidebar-logo {
     padding: 20px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.15);
 }
 
 .sidebar-logo a {
@@ -110,19 +117,18 @@ a:hover { text-decoration: underline; }
     color: rgba(255,255,255,0.75);
     text-decoration: none;
     transition: background 0.15s, color 0.15s;
-    border-radius: 0;
 }
 
 .nav-item:hover,
 .nav-item.active {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.15);
     color: #fff;
     text-decoration: none;
 }
 
 .sidebar-footer {
     padding: 16px;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255,255,255,0.15);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -180,7 +186,7 @@ a:hover { text-decoration: underline; }
 }
 
 .data-table th {
-    background: var(--gray-50);
+    background: var(--color-bg);
     padding: 10px 14px;
     text-align: left;
     font-size: 12px;
@@ -195,10 +201,11 @@ a:hover { text-decoration: underline; }
     padding: 10px 14px;
     border-bottom: 1px solid var(--gray-100);
     vertical-align: middle;
+    color: var(--color-text);
 }
 
 .data-table tr:last-child td { border-bottom: none; }
-.data-table tr:hover td { background: var(--gray-50); }
+.data-table tr:hover td { background: var(--color-bg); }
 .row-warning td { background: #fffbeb !important; }
 .row-unread td { background: #eff6ff !important; }
 
@@ -240,7 +247,7 @@ a:hover { text-decoration: underline; }
     display: block;
     font-size: 13px;
     font-weight: 500;
-    color: var(--gray-700);
+    color: var(--color-text);
     margin-bottom: 5px;
 }
 
@@ -257,7 +264,7 @@ a:hover { text-decoration: underline; }
     border: 1px solid var(--gray-300);
     border-radius: 6px;
     font-size: 14px;
-    color: var(--gray-900);
+    color: var(--color-text);
     background: #fff;
     transition: border-color 0.15s;
 }
@@ -267,7 +274,7 @@ a:hover { text-decoration: underline; }
 .form-group textarea:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
 }
 
 .form-grid {
@@ -297,7 +304,7 @@ a:hover { text-decoration: underline; }
 .stat-value {
     font-size: 32px;
     font-weight: 700;
-    color: var(--gray-900);
+    color: var(--color-text);
     line-height: 1;
 }
 
@@ -326,7 +333,7 @@ a:hover { text-decoration: underline; }
     margin-bottom: 16px;
 }
 
-.chart-header h2 { font-size: 16px; }
+.chart-header h2 { font-size: 16px; color: var(--color-text); }
 
 .top-services {
     background: #fff;
@@ -335,7 +342,7 @@ a:hover { text-decoration: underline; }
     box-shadow: 0 1px 3px rgba(0,0,0,0.07);
 }
 
-.top-services h2 { font-size: 16px; margin-bottom: 12px; }
+.top-services h2 { font-size: 16px; margin-bottom: 12px; color: var(--color-text); }
 
 /* ===== DETAIL CARD ===== */
 .detail-card {
@@ -364,7 +371,7 @@ dl dt {
 
 dl dd {
     font-size: 14px;
-    color: var(--gray-900);
+    color: var(--color-text);
     margin-top: 2px;
 }
 
@@ -390,8 +397,12 @@ dl dd {
     font-size: 13px;
 }
 
-.pagination a { padding: 5px 10px; border: 1px solid var(--gray-300);
-    border-radius: 4px; color: var(--gray-700); }
+.pagination a {
+    padding: 5px 10px;
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    color: var(--gray-700);
+}
 
 /* ===== ФИЛЬТРЫ ===== */
 .filter-form {
@@ -412,6 +423,7 @@ dl dd {
     border: 1px solid var(--gray-300);
     border-radius: 6px;
     font-size: 13px;
+    color: var(--color-text);
 }
 
 /* ===== TOOLBAR ===== */
@@ -437,6 +449,7 @@ dl dd {
     font-size: 15px;
     flex: 1;
     text-align: center;
+    color: var(--color-text);
 }
 
 .schedule-grid {
@@ -466,7 +479,7 @@ dl dd {
 }
 
 .day-name { font-size: 11px; color: var(--gray-600); text-transform: uppercase; }
-.day-date { font-weight: 700; font-size: 16px; }
+.day-date { font-weight: 700; font-size: 16px; color: var(--color-text); }
 
 .slot-card {
     border-radius: 4px;
@@ -539,15 +552,16 @@ dl dd {
 }
 
 .review-date { color: var(--gray-600); font-size: 12px; margin-left: auto; }
-.stars { color: #f59e0b; font-weight: 700; }
-.review-text { color: var(--gray-700); margin-bottom: 10px; line-height: 1.5; }
+.stars { color: var(--accent); font-weight: 700; }
+.review-text { color: var(--color-text); margin-bottom: 10px; line-height: 1.5; }
 .review-reply {
-    background: var(--gray-50);
+    background: var(--color-bg);
     border-left: 3px solid var(--primary);
     padding: 8px 12px;
     border-radius: 0 6px 6px 0;
     font-size: 13px;
     margin-bottom: 10px;
+    color: var(--color-text);
 }
 
 .review-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: flex-start; }
@@ -605,6 +619,7 @@ dl dd {
     border: 1px solid var(--gray-300);
     border-radius: 6px;
     font-size: 13px;
+    color: var(--color-text);
 }
 
 /* ===== NO DATA ===== */
@@ -617,7 +632,7 @@ dl dd {
 
 /* ===== LOGIN ===== */
 .login-body {
-    background: var(--gray-100);
+    background: var(--color-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -657,7 +672,7 @@ dl dd {
 
 /* ===== NOTIFY CHECKBOX ===== */
 .notify-checkbox {
-    background: var(--gray-50);
+    background: var(--color-bg);
     padding: 10px 12px;
     border-radius: 6px;
     border: 1px solid var(--gray-200);
