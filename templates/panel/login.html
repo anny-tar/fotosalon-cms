@@ -7,7 +7,7 @@
 </head>
 <body class="login-body">
     <div class="login-box">
-        <h1>ФотоСалон</h1>
+        <h1>{{ site_settings.site_name|default:'' }}</h1>
         <h2>Вход в панель управления</h2>
         {% if error %}
             <div class="alert alert-error">{{ error }}</div>

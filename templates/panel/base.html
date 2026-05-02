@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Панель управления{% endblock %} — {{ site_settings.site_name|default:'ФотоСалон' }}</title>
+    <title>{% block title %}Панель управления{% endblock %} — {{ site_settings.site_name|default:'' }}</title>
     <link rel="stylesheet" href="/theme.css">
     <link rel="stylesheet" href="/static/css/panel.css">
 </head>
@@ -13,7 +13,7 @@
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <a href="/panel/">{{ site_settings.site_name|default:'ФотоСалон' }}</a>
+            <a href="/panel/">{{ site_settings.site_name|default:'' }}</a>
         </div>
         <nav class="sidebar-nav">
             <a href="/panel/" class="nav-item {% block nav_dashboard %}{% endblock %}">Дашборд</a>
