@@ -1,0 +1,19 @@
+{% extends 'public/base.html' %}
+{% block title %}Заявка принята — {{ site_settings.site_name|default:'ФотоСалон' }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container" style="max-width:500px;text-align:center">
+        <div style="font-size:64px;margin-bottom:16px">✅</div>
+        <h1 class="section-title">Заявка принята!</h1>
+        <p class="section-subtitle">
+            Мы свяжемся с вами в ближайшее время для подтверждения записи.
+            Письмо с деталями отправлено на ваш email.
+        </p>
+        <div style="margin-top:32px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+            <a href="/" class="btn-outline-pub">На главную</a>
+            <a href="/services/" class="btn-primary-pub">Все услуги</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

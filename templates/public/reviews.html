@@ -1,0 +1,75 @@
+{% extends 'public/base.html' %}
+{% block title %}Отзывы — {{ site_settings.site_name|default:'ФотоСалон' }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h1 class="section-title">Отзывы</h1>
+            <p class="section-subtitle">Что говорят наши клиенты</p>
+        </div>
+
+        <!-- Список отзывов -->
+        <div class="reviews-list">
+            {% for review in reviews %}
+            <div class="review-pub-card">
+                <div class="review-pub-header">
+                    <strong>{{ review.author_name }}</strong>
+                    {% if review.rating %}
+                        <span class="stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                            {% endfor %}
+                        </span>
+                    {% endif %}
+                    <span style="color:var(--color-text-secondary);font-size:13px;margin-left:auto">
+                        {{ review.created_at|date:'d.m.Y' }}
+                    </span>
+                </div>
+                <p class="review-pub-text">{{ review.text }}</p>
+                {% if review.reply %}
+                <div class="review-pub-reply">
+                    <strong>Ответ салона:</strong>
+                    {{ review.reply.text }}
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <p style="color:var(--color-text-secondary);text-align:center;padding:40px 0">
+                Отзывов пока нет. Будьте первым!
+            </p>
+            {% endfor %}
+        </div>
+
+        <!-- Форма отзыва -->
+        <div style="max-width:600px;margin:48px auto 0">
+            <h2 class="section-title" style="font-size:24px;margin-bottom:24px">
+                Оставить отзыв
+            </h2>
+            <form method="post" class="pub-form card" style="padding:28px">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Ваше имя *</label>
+                    <input type="text" name="author_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Оценка</label>
+                    <div class="star-rating">
+                        {% for i in "54321" %}
+                        <input type="radio" name="rating"
+                               id="star{{ i }}" value="{{ i }}">
+                        <label for="star{{ i }}" title="{{ i }} звёзд">★</label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Текст отзыва *</label>
+                    <textarea name="text" rows="4" required
+                              placeholder="Поделитесь своими впечатлениями..."></textarea>
+                </div>
+                <button type="submit" class="btn-primary-pub">Отправить</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

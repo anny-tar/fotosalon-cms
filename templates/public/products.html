@@ -1,0 +1,46 @@
+{% extends 'public/base.html' %}
+{% block title %}Товары — {{ site_settings.site_name|default:'ФотоСалон' }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h1 class="section-title">Товары</h1>
+            <p class="section-subtitle">Печать фотографий, рамки, фотокниги и аксессуары</p>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="genre-filters">
+            <a href="/products/"
+               class="genre-btn {% if not current_category %}genre-btn--active{% endif %}">
+                Все
+            </a>
+            {% for cat in categories %}
+            <a href="/products/?category={{ cat.slug }}"
+               class="genre-btn {% if current_category == cat.slug %}genre-btn--active{% endif %}">
+                {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="cards-grid">
+            {% for product in products %}
+            <a href="/products/{{ product.pk }}/" class="card product-card">
+                {% if product.thumbnail %}
+                    <img src="/media/{{ product.thumbnail }}"
+                         alt="{{ product.name }}"
+                         style="width:100%;height:200px;object-fit:cover">
+                {% endif %}
+                <div class="product-card-body">
+                    <div class="product-article">{{ product.article }}</div>
+                    <h2 class="product-card-title">{{ product.name }}</h2>
+                    <div class="product-card-price">{{ product.price }} ₽</div>
+                </div>
+            </a>
+            {% empty %}
+            <p style="color:var(--color-text-secondary)">Товары пока не добавлены.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -4,9 +4,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('django-admin/', admin.site.urls),  # стандартная Django Admin
-    path('panel/', include('accounts.urls')),  # кастомная панель
-    path('', include('core.urls')),           # публичная часть
+    path('django-admin/', admin.site.urls),
+    path('panel/', include('accounts.urls')),
+    path('', include('core.urls')),
+    path('services/', include('services.urls')),
+    path('portfolio/', include('portfolio.urls')),
+    path('products/', include('products.urls')),
+    path('news/', include('news.urls')),
+    path('booking/', include('bookings.urls')),
+    path('reviews/', include('reviews.urls')),
 ]
 
 if settings.DEBUG:

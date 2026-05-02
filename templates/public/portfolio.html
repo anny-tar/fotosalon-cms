@@ -1,0 +1,108 @@
+{% extends 'public/base.html' %}
+{% block title %}Портфолио — {{ site_settings.site_name|default:'ФотоСалон' }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h1 class="section-title">Портфолио</h1>
+            <p class="section-subtitle">Наши работы по жанрам съёмки</p>
+        </div>
+
+        <!-- Фильтры по жанрам -->
+        <div class="genre-filters">
+            <button class="genre-btn {% if not current_genre %}genre-btn--active{% endif %}"
+                    onclick="filterPortfolio('')">
+                Все
+            </button>
+            {% for genre in genres %}
+            <button class="genre-btn {% if current_genre == genre.slug %}genre-btn--active{% endif %}"
+                    onclick="filterPortfolio('{{ genre.slug }}')">
+                {{ genre.name }}
+            </button>
+            {% endfor %}
+        </div>
+
+        <!-- Галерея -->
+        <div class="portfolio-grid" id="portfolioGrid">
+            {% for photo in photos %}
+            <div class="portfolio-item" onclick="openLightbox('{{ photo.image_watermarked|default:photo.image }}')">
+                <img src="/media/{{ photo.thumbnail }}"
+                     alt="{{ photo.filename }}"
+                     loading="lazy">
+                <div class="portfolio-overlay">
+                    <span>🔍</span>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color:var(--color-text-secondary);grid-column:1/-1">
+                Фотографии пока не добавлены.
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Лайтбокс -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <div class="lightbox-inner">
+        <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+        <img id="lightboxImg" src="" alt="">
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterPortfolio(slug) {
+    // Обновляем активную кнопку
+    document.querySelectorAll('.genre-btn').forEach(function(btn) {
+        btn.classList.remove('genre-btn--active');
+    });
+    event.target.classList.add('genre-btn--active');
+
+    const grid = document.getElementById('portfolioGrid');
+    grid.style.opacity = '0.5';
+
+    fetch('/portfolio/?genre=' + slug, {
+        headers: { 'x-requested-with': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        grid.innerHTML = '';
+        if (data.photos.length === 0) {
+            grid.innerHTML = '<p style="color:var(--color-text-secondary);grid-column:1/-1">Нет фотографий.</p>';
+        } else {
+            data.photos.forEach(function(photo) {
+                const item = document.createElement('div');
+                item.className = 'portfolio-item';
+                item.onclick = function() { openLightbox(photo.image); };
+                item.innerHTML = `
+                    <img src="${photo.thumbnail}" alt="${photo.filename}" loading="lazy">
+                    <div class="portfolio-overlay"><span>🔍</span></div>
+                `;
+                grid.appendChild(item);
+            });
+        }
+        grid.style.opacity = '1';
+        // Обновляем URL без перезагрузки
+        history.pushState(null, '', '/portfolio/' + (slug ? '?genre=' + slug : ''));
+    });
+}
+
+function openLightbox(src) {
+    document.getElementById('lightboxImg').src = '/media/' + src;
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'public/base.html' %}
+{% block title %}{{ product.name }} — {{ site_settings.site_name|default:'ФотоСалон' }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <a href="/products/" style="color:var(--primary);font-size:14px">← Назад к товарам</a>
+        <div class="product-detail">
+            <div class="product-detail-image">
+                {% if product.image %}
+                    <img src="/media/{{ product.image }}" alt="{{ product.name }}">
+                {% endif %}
+            </div>
+            <div class="product-detail-info">
+                <div class="product-article">Артикул: {{ product.article }}</div>
+                <h1 class="section-title">{{ product.name }}</h1>
+                <div class="product-detail-price">{{ product.price }} ₽</div>
+                <p style="color:var(--color-text-secondary);line-height:1.7;margin:16px 0">
+                    {{ product.description }}
+                </p>
+                <div style="background:var(--color-bg);border-radius:8px;padding:16px;margin-top:16px">
+                    <p style="font-size:14px;color:var(--color-text-secondary)">
+                        Товар приобретается в салоне. Для уточнения наличия — позвоните нам.
+                    </p>
+                    {% if contact %}
+                    <a href="tel:{{ contact.phone }}"
+                       class="btn-primary-pub" style="margin-top:12px;display:inline-block">
+                        {{ contact.phone }}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

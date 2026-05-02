@@ -1,0 +1,68 @@
+{% extends 'public/base.html' %}
+{% block title %}Новости — {{ site_settings.site_name|default:'ФотоСалон' }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h1 class="section-title">Новости</h1>
+        </div>
+
+        <!-- Категории -->
+        <div class="genre-filters">
+            <a href="/news/" class="genre-btn {% if not current_category %}genre-btn--active{% endif %}">
+                Все
+            </a>
+            {% for cat in categories %}
+            <a href="/news/?category={{ cat.slug }}"
+               class="genre-btn {% if current_category == cat.slug %}genre-btn--active{% endif %}">
+                {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="news-grid">
+            {% for item in news %}
+            <a href="/news/{{ item.pk }}/" class="card news-card">
+                {% with cover=item.get_cover %}
+                {% if cover %}
+                    <img src="/media/{{ cover }}"
+                         alt="{{ item.title }}"
+                         style="width:100%;height:200px;object-fit:cover">
+                {% endif %}
+                {% endwith %}
+                <div class="news-card-body">
+                    {% if item.category %}
+                        <span class="news-category">{{ item.category.name }}</span>
+                    {% endif %}
+                    <h2 class="news-card-title">{{ item.title }}</h2>
+                    <div class="news-card-date">{{ item.published_at|date:'d.m.Y' }}</div>
+                </div>
+            </a>
+            {% empty %}
+            <p style="color:var(--color-text-secondary)">Новостей пока нет.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Пагинация -->
+        {% if news.has_other_pages %}
+        <div class="pub-pagination">
+            {% if news.has_previous %}
+                <a href="?page={{ news.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}">&laquo;</a>
+            {% endif %}
+            {% for i in news.paginator.page_range %}
+                {% if news.number == i %}
+                    <span class="current">{{ i }}</span>
+                {% else %}
+                    <a href="?page={{ i }}{% if current_category %}&category={{ current_category }}{% endif %}">{{ i }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if news.has_next %}
+                <a href="?page={{ news.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}">&raquo;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}
