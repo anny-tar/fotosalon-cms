@@ -684,3 +684,77 @@ dl dd {
     font-size: 11px;
     margin-top: 3px;
 }
+
+/* ===== САЙДБАР TOGGLE ===== */
+.sidebar {
+    transition: transform 0.3s ease;
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+.panel-main {
+    transition: margin-left 0.3s ease;
+}
+
+.panel-main.expanded {
+    margin-left: 0;
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.4);
+    z-index: 99;
+    transition: opacity 0.3s;
+}
+
+.sidebar-overlay.active {
+    display: block;
+}
+
+.sidebar-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: #374151;
+    font-size: 20px;
+    line-height: 1;
+    margin-right: 12px;
+    transition: background 0.15s;
+}
+
+.sidebar-toggle:hover {
+    background: var(--gray-100);
+}
+
+.panel-header {
+    background: #fff;
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.panel-header-inner {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.panel-header-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+}

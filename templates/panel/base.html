@@ -9,11 +9,14 @@
 </head>
 <body class="panel-body">
 
+<!-- Затемнение фона при открытом сайдбаре -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
 <div class="panel-layout">
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-                <a href="/panel/">{{ site_settings.site_name|default:'' }}</a>
+            <a href="/panel/">{{ site_settings.site_name|default:'ФотоСалон' }}</a>
         </div>
         <nav class="sidebar-nav">
             <a href="/panel/" class="nav-item {% block nav_dashboard %}{% endblock %}">
@@ -70,9 +73,14 @@
         </div>
     </aside>
 
-    <main class="panel-main">
+    <main class="panel-main" id="panelMain">
         <div class="panel-header">
-            <h1>{% block page_title %}{% endblock %}</h1>
+            <div class="panel-header-inner">
+                <button class="sidebar-toggle" onclick="toggleSidebar()" title="Меню">
+                    ☰
+                </button>
+                <h1 class="panel-header-title">{% block page_title %}{% endblock %}</h1>
+            </div>
         </div>
 
         {% if messages %}
@@ -91,6 +99,47 @@
 </div>
 
 <script src="/static/js/panel.js"></script>
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const main = document.getElementById('panelMain');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        const isCollapsed = sidebar.classList.contains('collapsed');
+
+        if (isCollapsed) {
+            // Открываем сайдбар
+            sidebar.classList.remove('collapsed');
+            main.classList.remove('expanded');
+            overlay.classList.add('active');
+        } else {
+            // Закрываем сайдбар
+            sidebar.classList.add('collapsed');
+            main.classList.add('expanded');
+            overlay.classList.remove('active');
+        }
+
+        localStorage.setItem('sidebarCollapsed', !isCollapsed);
+    }
+
+    // Восстанавливаем состояние при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        const sidebar = document.getElementById('sidebar');
+        const main = document.getElementById('panelMain');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        if (isCollapsed) {
+            sidebar.classList.add('collapsed');
+            main.classList.add('expanded');
+            overlay.classList.remove('active');
+        } else {
+            sidebar.classList.remove('collapsed');
+            main.classList.remove('expanded');
+            overlay.classList.add('active');
+        }
+    });
+</script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>
