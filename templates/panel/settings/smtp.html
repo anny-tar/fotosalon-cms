@@ -12,44 +12,158 @@
     <a href="/panel/settings/sections/" class="tab">Конструктор страниц</a>
 </div>
 
+<!-- Подсказки по почтовым сервисам -->
+<details class="collapsible">
+    <summary>📧 Яндекс Почта</summary>
+    <div style="margin-top:12px;font-size:13px;line-height:1.8;color:#374151">
+        <ol style="padding-left:20px;margin-bottom:16px">
+            <li>Откройте <a href="https://id.yandex.ru/security" target="_blank">id.yandex.ru/security</a></li>
+            <li>Найдите раздел <strong>«Пароли приложений»</strong></li>
+            <li>Нажмите <strong>«Создать новый пароль»</strong> → выберите тип <strong>«Почта»</strong></li>
+            <li>Введите название (например «ФотоСалон») и скопируйте пароль</li>
+            <li>В настройках почты включите доступ по SMTP:<br>
+                <strong>Все настройки → Почтовые программы → С сервера imap.yandex.ru по протоколу IMAP</strong>
+            </li>
+        </ol>
+        <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px 16px;margin-bottom:8px">
+            <strong style="color:#0369a1">Настройки:</strong>
+            <table style="margin-top:8px;font-size:13px;border-collapse:collapse;width:100%">
+                <tr><td style="padding:4px 0;color:#6b7280;width:160px">SMTP сервер</td><td><code style="background:#e0f2fe;padding:2px 6px;border-radius:4px">smtp.yandex.ru</code></td></tr>
+                <tr><td style="padding:4px 0;color:#6b7280">Порт</td><td><code style="background:#e0f2fe;padding:2px 6px;border-radius:4px">587</code></td></tr>
+                <tr><td style="padding:4px 0;color:#6b7280">Логин</td><td><code style="background:#e0f2fe;padding:2px 6px;border-radius:4px">ваш_email@yandex.ru</code></td></tr>
+                <tr><td style="padding:4px 0;color:#6b7280">Пароль</td><td><code style="background:#e0f2fe;padding:2px 6px;border-radius:4px">пароль приложения</code></td></tr>
+                <tr><td style="padding:4px 0;color:#6b7280">Адрес отправителя</td><td><code style="background:#e0f2fe;padding:2px 6px;border-radius:4px">ваш_email@yandex.ru</code></td></tr>
+            </table>
+        </div>
+        <button type="button" class="btn btn-secondary" style="margin-top:8px"
+                onclick="fillProvider('smtp.yandex.ru', '587', '')">
+            ⚡ Заполнить автоматически
+        </button>
+    </div>
+</details>
+
+<details class="collapsible">
+    <summary>📧 Gmail (Google)</summary>
+    <div style="margin-top:12px;font-size:13px;line-height:1.8;color:#374151">
+        <p style="margin-bottom:8px">
+            Gmail требует <strong>двухфакторную аутентификацию</strong> и <strong>пароль приложения</strong>.
+        </p>
+        <ol style="padding-left:20px;margin-bottom:16px">
+            <li>Включите двухфакторную аутентификацию на <a href="https://myaccount.google.com/security" target="_blank">myaccount.google.com/security</a></li>
+            <li>Перейдите в <a href="https://myaccount.google.com/apppasswords" target="_blank">myaccount.google.com/apppasswords</a></li>
+            <li>Выберите приложение <strong>«Почта»</strong> и устройство <strong>«Другое»</strong></li>
+            <li>Введите название (например «ФотоСалон») и нажмите <strong>«Создать»</strong></li>
+            <li>Скопируйте 16-значный пароль — он показывается только один раз</li>
+        </ol>
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:8px">
+            <strong style="color:#15803d">Настройки:</strong>
+            <table style="margin-top:8px;font-size:13px;border-collapse:collapse;width:100%">
+                <tr><td style="padding:4px 0;color:#6b7280;width:160px">SMTP сервер</td><td><code style="background:#dcfce7;padding:2px 6px;border-radius:4px">smtp.gmail.com</code></td></tr>
+                <tr><td style="padding:4px 0;color:#6b7280">Порт</td><td><code style="background:#dcfce7;padding:2px 6px;border-radius:4px">587</code></td></tr>
+                <tr><td style="padding:4px 0;color:#6b7280">Логин</td><td><code style="background:#dcfce7;padding:2px 6px;border-radius:4px">ваш_email@gmail.com</code></td></tr>
+                <tr><td style="padding:4px 0;color:#6b7280">Пароль</td><td><code style="background:#dcfce7;padding:2px 6px;border-radius:4px">пароль приложения (16 знаков)</code></td></tr>
+                <tr><td style="padding:4px 0;color:#6b7280">Адрес отправителя</td><td><code style="background:#dcfce7;padding:2px 6px;border-radius:4px">ваш_email@gmail.com</code></td></tr>
+            </table>
+        </div>
+        <button type="button" class="btn btn-secondary" style="margin-top:8px"
+                onclick="fillProvider('smtp.gmail.com', '587', '')">
+            ⚡ Заполнить автоматически
+        </button>
+    </div>
+</details>
+
+<details class="collapsible">
+    <summary>📧 Mail.ru</summary>
+    <div style="margin-top:12px;font-size:13px;line-height:1.8;color:#374151">
+        <p style="margin-bottom:8px">
+            Mail.ru также требует создать отдельный пароль для приложения.
+        </p>
+        <ol style="padding-left:20px;margin-bottom:16px">
+            <li>Перейдите в <a href="https://account.mail.ru/user/security/passwords" target="_blank">account.mail.ru/user/security/passwords</a></li>
+            <li>Нажмите <strong>«Добавить»</strong> в разделе «Пароли для внешних приложений»</li>
+            <li>Введите название (например «ФотоСалон»)</li>
+            <li>Скопируйте сгенерированный пароль</li>
+            <li>В настройках почты разрешите доступ по SMTP:<br>
+                <strong>Настройки → Безопасность → Включить доступ по протоколу POP3 и SMTP</strong>
+            </li>
+        </ol>
+        <div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:8px;padding:12px 16px;margin-bottom:8px">
+            <strong style="color:#7c3aed">Настройки:</strong>
+            <table style="margin-top:8px;font-size:13px;border-collapse:collapse;width:100%">
+                <tr><td style="padding:4px 0;color:#6b7280;width:160px">SMTP сервер</td><td><code style="background:#f3e8ff;padding:2px 6px;border-radius:4px">smtp.mail.ru</code></td></tr>
+                <tr><td style="padding:4px 0;color:#6b7280">Порт</td><td><code style="background:#f3e8ff;padding:2px 6px;border-radius:4px">587</code></td></tr>
+                <tr><td style="padding:4px 0;color:#6b7280">Логин</td><td><code style="background:#f3e8ff;padding:2px 6px;border-radius:4px">ваш_email@mail.ru</code></td></tr>
+                <tr><td style="padding:4px 0;color:#6b7280">Пароль</td><td><code style="background:#f3e8ff;padding:2px 6px;border-radius:4px">пароль приложения</code></td></tr>
+                <tr><td style="padding:4px 0;color:#6b7280">Адрес отправителя</td><td><code style="background:#f3e8ff;padding:2px 6px;border-radius:4px">ваш_email@mail.ru</code></td></tr>
+            </table>
+        </div>
+        <button type="button" class="btn btn-secondary" style="margin-top:8px"
+                onclick="fillProvider('smtp.mail.ru', '587', '')">
+            ⚡ Заполнить автоматически
+        </button>
+    </div>
+</details>
+
 <form method="post" class="detail-card">
     {% csrf_token %}
     <div class="form-grid">
         <div class="form-group">
             <label>SMTP сервер</label>
-            <input type="text" name="host"
+            <input type="text" name="host" id="smtp_host"
                    value="{{ smtp.host|default:'' }}"
-                   placeholder="smtp.gmail.com">
+                   placeholder="smtp.yandex.ru">
         </div>
         <div class="form-group">
             <label>Порт</label>
-            <input type="number" name="port"
+            <input type="number" name="port" id="smtp_port"
                    value="{{ smtp.port|default:'587' }}">
         </div>
         <div class="form-group">
             <label>Логин</label>
-            <input type="text" name="username"
-                   value="{{ smtp.username|default:'' }}">
+            <input type="text" name="username" id="smtp_username"
+                   value="{{ smtp.username|default:'' }}"
+                   placeholder="ваш_email@yandex.ru">
         </div>
         <div class="form-group">
-            <label>Пароль</label>
-            <input type="password" name="password"
+            <label>Пароль приложения</label>
+            <input type="password" name="password" id="smtp_password"
                    placeholder="Оставьте пустым чтобы не менять">
+            <small style="color:#6b7280;font-size:12px;margin-top:4px;display:block">
+                Используйте пароль приложения, не пароль от аккаунта
+            </small>
         </div>
         <div class="form-group">
             <label>Адрес отправителя</label>
-            <input type="email" name="from_email"
-                   value="{{ smtp.from_email|default:'' }}">
-        </div>
-        <div class="form-group">
-            <label>
-                <input type="checkbox" name="use_tls"
-                    {% if smtp.use_tls or not smtp %}checked{% endif %}>
-                Использовать TLS
-            </label>
+            <input type="email" name="from_email" id="smtp_from"
+                   value="{{ smtp.from_email|default:'' }}"
+                   placeholder="ваш_email@yandex.ru">
         </div>
     </div>
+
+    <div style="
+        background:#fef3c7;
+        border:1px solid #fde68a;
+        border-radius:8px;
+        padding:10px 14px;
+        font-size:13px;
+        color:#b45309;
+        margin-bottom:16px;
+    ">
+        🔒 TLS-шифрование всегда включено для безопасной передачи данных.
+    </div>
+
     <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function fillProvider(host, port, username) {
+    document.getElementById('smtp_host').value = host;
+    document.getElementById('smtp_port').value = port;
+    document.getElementById('smtp_username').focus();
+    document.getElementById('smtp_from').placeholder = username || 'ваш_email';
+}
+</script>
 {% endblock %}

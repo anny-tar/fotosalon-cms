@@ -101,7 +101,6 @@ class SmtpSettings(models.Model):
     password = models.CharField(max_length=500, verbose_name='Пароль (зашифрован)')
     from_email = models.EmailField(verbose_name='Адрес отправителя')
     use_tls = models.BooleanField(default=True, verbose_name='Использовать TLS')
-
     class Meta:
         verbose_name = 'Настройки SMTP'
         verbose_name_plural = 'Настройки SMTP'

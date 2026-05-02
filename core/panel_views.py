@@ -78,7 +78,7 @@ def smtp_settings(request):
         smtp.port       = int(request.POST.get('port', 587))
         smtp.username   = request.POST.get('username', '').strip()
         smtp.from_email = request.POST.get('from_email', '').strip()
-        smtp.use_tls    = request.POST.get('use_tls') == 'on'
+        smtp.use_tls = True
 
         password = request.POST.get('password', '').strip()
         if password:
