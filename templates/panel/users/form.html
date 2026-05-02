@@ -1,0 +1,69 @@
+{% extends 'panel/base.html' %}
+{% block title %}{% if edit_user %}Изменить пользователя{% else %}Новый пользователь{% endif %}{% endblock %}
+{% block page_title %}{% if edit_user %}Изменить пользователя{% else %}Добавить пользователя{% endif %}{% endblock %}
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+
+<a href="/panel/users/" class="btn btn-secondary">← Назад</a>
+
+<form method="post" class="detail-card">
+    {% csrf_token %}
+    <div class="form-grid">
+        {% if not edit_user %}
+        <div class="form-group">
+            <label>Логин *</label>
+            <input type="text" name="username" required>
+        </div>
+        {% endif %}
+        <div class="form-group">
+            <label>Имя</label>
+            <input type="text" name="first_name"
+                   value="{{ edit_user.first_name|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Фамилия</label>
+            <input type="text" name="last_name"
+                   value="{{ edit_user.last_name|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email"
+                   value="{{ edit_user.email|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Пароль {% if edit_user %}(оставьте пустым чтобы не менять){% endif %}</label>
+            <input type="password" name="password"
+                   {% if not edit_user %}required{% endif %}>
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="is_superuser"
+                    {% if edit_user.is_superuser %}checked{% endif %}>
+                Администратор
+            </label>
+        </div>
+    </div>
+
+    {% if edit_user %}
+    <h3>Настройки уведомлений</h3>
+    <div class="form-group">
+        <label>
+            <input type="checkbox" name="notify_bookings"
+                {% if edit_user.profile.notify_bookings %}checked{% endif %}>
+            Уведомления о новых заявках
+        </label>
+    </div>
+    <div class="form-group">
+        <label>
+            <input type="checkbox" name="notify_reviews"
+                {% if edit_user.profile.notify_reviews %}checked{% endif %}>
+            Уведомления о новых отзывах
+        </label>
+    </div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+{% endblock %}

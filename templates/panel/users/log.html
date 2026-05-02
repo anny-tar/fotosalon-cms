@@ -1,0 +1,45 @@
+{% extends 'panel/base.html' %}
+{% block title %}Журнал действий{% endblock %}
+{% block page_title %}Журнал действий{% endblock %}
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+
+<a href="/panel/users/" class="btn btn-secondary">← Назад</a>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Дата и время</th>
+            <th>Пользователь</th>
+            <th>Действие</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in log %}
+        <tr>
+            <td>{{ entry.created_at|date:'d.m.Y H:i' }}</td>
+            <td>{{ entry.user.username|default:'—' }}</td>
+            <td>{{ entry.action }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="no-data">Журнал пуст</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if log.has_other_pages %}
+<div class="pagination">
+    {% if log.has_previous %}
+        <a href="?page={{ log.previous_page_number }}">&laquo;</a>
+    {% endif %}
+    <span>{{ log.number }} / {{ log.paginator.num_pages }}</span>
+    {% if log.has_next %}
+        <a href="?page={{ log.next_page_number }}">&raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

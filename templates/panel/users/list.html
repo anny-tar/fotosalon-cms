@@ -1,0 +1,68 @@
+{% extends 'panel/base.html' %}
+{% block title %}Пользователи{% endblock %}
+{% block page_title %}Пользователи{% endblock %}
+{% block nav_users %}active{% endblock %}
+
+{% block content %}
+
+<div class="toolbar">
+    <a href="/panel/users/create/" class="btn btn-primary">+ Добавить пользователя</a>
+    <a href="/panel/users/log/" class="btn btn-secondary">Журнал действий</a>
+</div>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Логин</th>
+            <th>Имя</th>
+            <th>Email</th>
+            <th>Роль</th>
+            <th>Статус</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.username }}</td>
+            <td>{{ u.get_full_name|default:'—' }}</td>
+            <td>{{ u.email }}</td>
+            <td>
+                {% if u.is_superuser %}
+                    <span class="badge badge-danger">Администратор</span>
+                {% else %}
+                    <span class="badge badge-success">Менеджер</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if u.is_active %}
+                    <span class="badge badge-success">Активен</span>
+                {% else %}
+                    <span class="badge badge-danger">Заблокирован</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="/panel/users/{{ u.pk }}/edit/"
+                   class="btn btn-sm">Изменить</a>
+                {% if u != request.user %}
+                <form method="post"
+                      action="/panel/users/{{ u.pk }}/toggle/"
+                      style="display:inline"
+                      onsubmit="return confirm('Изменить статус пользователя?')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-warning">
+                        {% if u.is_active %}Заблокировать{% else %}Разблокировать{% endif %}
+                    </button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="no-data">Пользователей нет</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

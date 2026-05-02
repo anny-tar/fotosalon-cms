@@ -1,0 +1,93 @@
+{% extends 'panel/base.html' %}
+{% block title %}Отзывы{% endblock %}
+{% block page_title %}Отзывы{% endblock %}
+{% block nav_reviews %}active{% endblock %}
+
+{% block content %}
+
+<div class="tab-bar">
+    <a href="?status=pending"
+       class="tab {% if current_status == 'pending' %}tab-active{% endif %}">
+        На модерации
+        {% if pending_count %}<span class="badge">{{ pending_count }}</span>{% endif %}
+    </a>
+    <a href="?status=approved"
+       class="tab {% if current_status == 'approved' %}tab-active{% endif %}">
+        Одобренные
+    </a>
+    <a href="?status=hidden"
+       class="tab {% if current_status == 'hidden' %}tab-active{% endif %}">
+        Скрытые
+    </a>
+</div>
+
+{% for review in reviews %}
+<div class="review-card">
+    <div class="review-header">
+        <strong>{{ review.author_name }}</strong>
+        {% if review.rating %}
+            <span class="stars">{{ review.rating }}★</span>
+        {% endif %}
+        <span class="review-date">{{ review.created_at|date:'d.m.Y H:i' }}</span>
+    </div>
+    <div class="review-text">{{ review.text }}</div>
+
+    {% if review.reply %}
+    <div class="review-reply">
+        <strong>Ответ салона:</strong> {{ review.reply.text }}
+    </div>
+    {% endif %}
+
+    <div class="review-actions">
+        {% if not review.is_approved %}
+        <form method="post" action="/panel/reviews/{{ review.pk }}/approve/"
+              style="display:inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-success">Одобрить</button>
+        </form>
+        {% endif %}
+        {% if not review.is_hidden %}
+        <form method="post" action="/panel/reviews/{{ review.pk }}/hide/"
+              style="display:inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-warning">Скрыть</button>
+        </form>
+        {% endif %}
+        <form method="post" action="/panel/reviews/{{ review.pk }}/delete/"
+              style="display:inline"
+              onsubmit="return confirm('Удалить отзыв?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+        </form>
+
+        <!-- Ответ на отзыв -->
+        <details style="display:inline-block">
+            <summary class="btn btn-sm">
+                {% if review.reply %}Изменить ответ{% else %}Ответить{% endif %}
+            </summary>
+            <form method="post" action="/panel/reviews/{{ review.pk }}/reply/">
+                {% csrf_token %}
+                <textarea name="text" rows="2"
+                          style="width:100%;margin-top:8px">{{ review.reply.text|default:'' }}</textarea>
+                <button type="submit" class="btn btn-sm btn-primary">Сохранить ответ</button>
+            </form>
+        </details>
+    </div>
+</div>
+{% empty %}
+<p class="no-data">Отзывов нет</p>
+{% endfor %}
+
+{% if reviews.has_other_pages %}
+<div class="pagination">
+    {% if reviews.has_previous %}
+        <a href="?status={{ current_status }}&page={{ reviews.previous_page_number }}">&laquo;</a>
+    {% endif %}
+    <span>{{ reviews.number }} / {{ reviews.paginator.num_pages }}</span>
+    {% if reviews.has_next %}
+        <a href="?status={{ current_status }}&page={{ reviews.next_page_number }}">&raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

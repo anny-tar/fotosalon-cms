@@ -1,0 +1,19 @@
+{% extends 'panel/base.html' %}
+{% block title %}Сообщение от {{ msg.name }}{% endblock %}
+{% block page_title %}Сообщение от {{ msg.name }}{% endblock %}
+{% block nav_feedback %}active{% endblock %}
+
+{% block content %}
+
+<a href="/panel/feedback/" class="btn btn-secondary">← Назад</a>
+
+<div class="detail-card">
+    <dl>
+        <dt>Имя</dt><dd>{{ msg.name }}</dd>
+        <dt>Email</dt><dd><a href="mailto:{{ msg.email }}">{{ msg.email }}</a></dd>
+        <dt>Дата</dt><dd>{{ msg.created_at|date:'d.m.Y H:i' }}</dd>
+        <dt>Сообщение</dt><dd>{{ msg.message|linebreaks }}</dd>
+    </dl>
+</div>
+
+{% endblock %}
