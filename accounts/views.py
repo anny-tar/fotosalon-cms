@@ -10,6 +10,7 @@ from reviews.models import Review
 from services.models import Service
 from products.models import Product
 from feedback.models import FeedbackMessage
+from django.db.models import F
 
 
 @panel_required
