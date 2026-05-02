@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% block meta %}
+    <title>{% block title %}{{ site_settings.site_name|default:'ФотоСалон' }}{% endblock %}</title>
+    <meta name="description" content="{{ site_settings.meta_description|default:'' }}">
+    {% endblock %}
+
+    <link rel="stylesheet" href="/theme.css">
+    <link rel="stylesheet" href="/static/css/public.css">
+</head>
+<body>
+
+<!-- ШАПКА -->
+<header class="site-header">
+    <div class="container">
+        <div class="header-inner">
+            <!-- Логотип -->
+            <a href="/" class="header-logo">
+                {% if site_settings.logo %}
+                    <img src="/media/{{ site_settings.logo }}" alt="{{ site_settings.site_name }}">
+                {% endif %}
+                <span>{{ site_settings.site_name|default:'ФотоСалон' }}</span>
+            </a>
+
+            <!-- Навигация desktop -->
+            <nav class="header-nav">
+                <a href="/" class="nav-link {% if request.resolver_match.url_name == 'home' %}nav-link--active{% endif %}">
+                    Главная
+                </a>
+                <a href="/about/" class="nav-link {% if request.resolver_match.url_name == 'about' %}nav-link--active{% endif %}">
+                    О нас
+                </a>
+                <a href="/services/" class="nav-link {% if 'service' in request.resolver_match.url_name %}nav-link--active{% endif %}">
+                    Услуги
+                </a>
+                <a href="/portfolio/" class="nav-link {% if 'portfolio' in request.resolver_match.url_name %}nav-link--active{% endif %}">
+                    Портфолио
+                </a>
+                <a href="/products/" class="nav-link {% if 'product' in request.resolver_match.url_name %}nav-link--active{% endif %}">
+                    Товары
+                </a>
+                <a href="/news/" class="nav-link {% if 'news' in request.resolver_match.url_name %}nav-link--active{% endif %}">
+                    Новости
+                </a>
+                <a href="/contacts/" class="nav-link {% if request.resolver_match.url_name == 'contacts' %}nav-link--active{% endif %}">
+                    Контакты
+                </a>
+            </nav>
+
+            <!-- Кнопка записи -->
+            <a href="/booking/" class="btn-accent">Записаться</a>
+
+            <!-- Бургер для мобильных -->
+            <button class="burger" id="burgerBtn" onclick="toggleMobileMenu()" aria-label="Меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Мобильное меню -->
+    <div class="mobile-menu" id="mobileMenu">
+        <nav class="mobile-nav">
+            <a href="/" class="mobile-nav-link">Главная</a>
+            <a href="/about/" class="mobile-nav-link">О нас</a>
+            <a href="/services/" class="mobile-nav-link">Услуги</a>
+            <a href="/portfolio/" class="mobile-nav-link">Портфолио</a>
+            <a href="/products/" class="mobile-nav-link">Товары</a>
+            <a href="/news/" class="mobile-nav-link">Новости</a>
+            <a href="/contacts/" class="mobile-nav-link">Контакты</a>
+            <a href="/booking/" class="mobile-nav-link mobile-nav-link--accent">Записаться</a>
+        </nav>
+    </div>
+</header>
+
+<!-- ОСНОВНОЙ КОНТЕНТ -->
+<main class="site-main">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert-pub alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<!-- ПОДВАЛ -->
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    {{ site_settings.site_name|default:'' }}
+                </div>
+                <p class="footer-desc">
+                    {{ site_settings.slogan|default:'' }}
+                </p>
+            </div>
+            <div class="footer-col">
+                <div class="footer-heading">Разделы</div>
+                <nav class="footer-nav">
+                    <a href="/services/">Услуги</a>
+                    <a href="/portfolio/">Портфолио</a>
+                    <a href="/products/">Товары</a>
+                    <a href="/news/">Новости</a>
+                    <a href="/contacts/">Контакты</a>
+                </nav>
+            </div>
+            <div class="footer-col">
+                <div class="footer-heading">Контакты</div>
+                {% if contact %}
+                <div class="footer-contacts">
+                    <div>📍 {{ contact.address }}</div>
+                    <div>📞 {{ contact.phone }}</div>
+                    <div>✉️ {{ contact.email }}</div>
+                    <div>🕐 {{ contact.working_hours|linebreaksbr }}</div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="footer-col">
+                <a href="/booking/" class="btn-accent btn-accent--lg">
+                    Записаться онлайн
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© {{ now.year|default:'' }} {{ site_settings.site_name|default:'' }}</span>
+            <span>Все права защищены</span>
+        </div>
+    </div>
+</footer>
+
+<script src="/static/js/public.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

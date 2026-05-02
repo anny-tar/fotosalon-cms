@@ -98,6 +98,15 @@
                value="{{ settings.site_name|default:'' }}">
     </div>
     <div class="form-group">
+        <label>Слоган</label>
+        <input type="text" name="slogan"
+            value="{{ settings.slogan|default:'' }}"
+            placeholder="Ваши моменты — наше искусство">
+        <small style="color:#6b7280;font-size:12px;margin-top:4px;display:block">
+            Отображается в подвале сайта под названием
+        </small>
+    </div>
+    <div class="form-group">
         <label>Meta title</label>
         <input type="text" name="meta_title"
                value="{{ settings.meta_title|default:'' }}">

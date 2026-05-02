@@ -16,6 +16,7 @@ def settings_view(request):
             settings_obj = SiteSettings()
 
         settings_obj.site_name            = request.POST.get('site_name', '').strip()
+        settings_obj.slogan = request.POST.get('slogan', '').strip()
         settings_obj.meta_title           = request.POST.get('meta_title', '').strip()
         settings_obj.meta_description     = request.POST.get('meta_description', '').strip()
         settings_obj.color_primary        = request.POST.get('color_primary', '#2563eb')

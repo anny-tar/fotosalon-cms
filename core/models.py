@@ -6,6 +6,11 @@ class SiteSettings(models.Model):
         max_length=255,
         verbose_name='Название сайта'
     )
+    slogan = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name='Слоган'
+    )
     logo = models.ImageField(
         upload_to='site/',
         blank=True,
