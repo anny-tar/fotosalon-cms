@@ -3,23 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Панель управления{% endblock %} — ФотоСалон</title>
+    <title>{% block title %}Панель управления{% endblock %} — {{ site_settings.site_name|default:'ФотоСалон' }}</title>
+    <link rel="stylesheet" href="/theme.css">
     <link rel="stylesheet" href="/static/css/panel.css">
 </head>
 <body class="panel-body">
 
 <div class="panel-layout">
 
-    <!-- Боковое меню -->
     <aside class="sidebar">
         <div class="sidebar-logo">
-            <a href="/panel/">ФотоСалон</a>
+            {% if site_settings.logo %}
+                <a href="/panel/" style="display:flex;align-items:center;gap:10px">
+                    <img src="/media/{{ site_settings.logo }}"
+                         style="height:36px;width:auto;object-fit:contain">
+                    <span>{{ site_settings.site_name|default:'ФотоСалон' }}</span>
+                </a>
+            {% else %}
+                <a href="/panel/">{{ site_settings.site_name|default:'ФотоСалон' }}</a>
+            {% endif %}
         </div>
         <nav class="sidebar-nav">
             <a href="/panel/" class="nav-item {% block nav_dashboard %}{% endblock %}">
                 Дашборд
             </a>
-            <div class="nav-group-title">Контент</div>
+            <div class="nav-group-title">Работа</div>
             <a href="/panel/bookings/" class="nav-item {% block nav_bookings %}{% endblock %}">
                 Заявки
                 {% if pending_bookings_count %}
@@ -29,6 +37,7 @@
             <a href="/panel/schedule/" class="nav-item {% block nav_schedule %}{% endblock %}">
                 Расписание
             </a>
+            <div class="nav-group-title">Контент</div>
             <a href="/panel/services/" class="nav-item {% block nav_services %}{% endblock %}">
                 Услуги
             </a>
@@ -69,7 +78,6 @@
         </div>
     </aside>
 
-    <!-- Основной контент -->
     <main class="panel-main">
         <div class="panel-header">
             <h1>{% block page_title %}{% endblock %}</h1>
@@ -77,7 +85,9 @@
 
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                <div class="alert alert-{{ message.tags }}" style="margin:16px 24px 0">
+                    {{ message }}
+                </div>
             {% endfor %}
         {% endif %}
 

@@ -12,18 +12,19 @@ from .models import (
 def settings_view(request):
     settings_obj = SiteSettings.objects.first()
     if request.method == 'POST':
-        site_name = request.POST.get('site_name', '').strip()
-        meta_title = request.POST.get('meta_title', '').strip()
-        meta_description = request.POST.get('meta_description', '').strip()
-        logo = request.FILES.get('logo')
-
         if not settings_obj:
             settings_obj = SiteSettings()
 
-        settings_obj.site_name = site_name
-        settings_obj.meta_title = meta_title
-        settings_obj.meta_description = meta_description
+        settings_obj.site_name = request.POST.get('site_name', '').strip()
+        settings_obj.meta_title = request.POST.get('meta_title', '').strip()
+        settings_obj.meta_description = request.POST.get('meta_description', '').strip()
+        settings_obj.color_primary = request.POST.get('color_primary', '#2563eb')
+        settings_obj.color_primary_dark = request.POST.get('color_primary_dark', '#1d4ed8')
+        settings_obj.color_accent = request.POST.get('color_accent', '#f59e0b')
+        settings_obj.color_bg = request.POST.get('color_bg', '#f9fafb')
+        settings_obj.color_text = request.POST.get('color_text', '#111827')
 
+        logo = request.FILES.get('logo')
         if logo:
             from portfolio.image_service import convert_to_webp_and_thumbnail
             main_path, _ = convert_to_webp_and_thumbnail(
@@ -77,7 +78,6 @@ def smtp_settings(request):
 
         password = request.POST.get('password', '').strip()
         if password:
-            # Простое шифрование через base64
             import base64
             smtp.password = base64.b64encode(password.encode()).decode()
 

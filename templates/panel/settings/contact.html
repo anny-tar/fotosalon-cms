@@ -1,0 +1,52 @@
+{% extends 'panel/base.html' %}
+{% block title %}Контактные данные{% endblock %}
+{% block page_title %}Контактные данные{% endblock %}
+{% block nav_settings %}active{% endblock %}
+
+{% block content %}
+
+<div class="tab-bar">
+    <a href="/panel/settings/" class="tab">Общие</a>
+    <a href="/panel/settings/contact/" class="tab tab-active">Контакты</a>
+    <a href="/panel/settings/smtp/" class="tab">SMTP</a>
+    <a href="/panel/settings/sections/" class="tab">Конструктор страниц</a>
+</div>
+
+<form method="post" class="detail-card">
+    {% csrf_token %}
+    <div class="form-group">
+        <label>Адрес</label>
+        <input type="text" name="address"
+               value="{{ contact.address|default:'' }}">
+    </div>
+    <div class="form-group">
+        <label>Телефон</label>
+        <input type="text" name="phone"
+               value="{{ contact.phone|default:'' }}">
+    </div>
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email"
+               value="{{ contact.email|default:'' }}">
+    </div>
+    <div class="form-group">
+        <label>Режим работы</label>
+        <textarea name="working_hours"
+                  rows="3">{{ contact.working_hours|default:'' }}</textarea>
+    </div>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Широта (для карты)</label>
+            <input type="text" name="map_lat"
+                   value="{{ contact.map_lat|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Долгота (для карты)</label>
+            <input type="text" name="map_lng"
+                   value="{{ contact.map_lng|default:'' }}">
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+{% endblock %}

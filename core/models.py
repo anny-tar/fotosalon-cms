@@ -27,6 +27,31 @@ class SiteSettings(models.Model):
         null=True,
         verbose_name='OG Image'
     )
+    color_primary = models.CharField(
+        max_length=7,
+        default='#2563eb',
+        verbose_name='Основной цвет'
+    )
+    color_primary_dark = models.CharField(
+        max_length=7,
+        default='#1d4ed8',
+        verbose_name='Тёмный акцент'
+    )
+    color_accent = models.CharField(
+        max_length=7,
+        default='#f59e0b',
+        verbose_name='Акцентный цвет'
+    )
+    color_bg = models.CharField(
+        max_length=7,
+        default='#f9fafb',
+        verbose_name='Цвет фона'
+    )
+    color_text = models.CharField(
+        max_length=7,
+        default='#111827',
+        verbose_name='Цвет текста'
+    )
 
     class Meta:
         verbose_name = 'Настройки сайта'

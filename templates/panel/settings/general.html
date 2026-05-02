@@ -1,0 +1,165 @@
+{% extends 'panel/base.html' %}
+{% block title %}Настройки сайта{% endblock %}
+{% block page_title %}Настройки сайта{% endblock %}
+{% block nav_settings %}active{% endblock %}
+
+{% block content %}
+
+<div class="tab-bar">
+    <a href="/panel/settings/" class="tab tab-active">Общие</a>
+    <a href="/panel/settings/contact/" class="tab">Контакты</a>
+    <a href="/panel/settings/smtp/" class="tab">SMTP</a>
+    <a href="/panel/settings/sections/" class="tab">Конструктор страниц</a>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="detail-card">
+    {% csrf_token %}
+
+    <h3 style="margin-bottom:16px">Основное</h3>
+    <div class="form-group">
+        <label>Название сайта</label>
+        <input type="text" name="site_name"
+               value="{{ settings.site_name|default:'' }}">
+    </div>
+    <div class="form-group">
+        <label>Meta title</label>
+        <input type="text" name="meta_title"
+               value="{{ settings.meta_title|default:'' }}">
+    </div>
+    <div class="form-group">
+        <label>Meta description</label>
+        <textarea name="meta_description"
+                  rows="3">{{ settings.meta_description|default:'' }}</textarea>
+    </div>
+    <div class="form-group">
+        <label>Логотип</label>
+        {% if settings.logo %}
+            <img src="/media/{{ settings.logo }}"
+                 style="height:60px;display:block;margin-bottom:8px;border-radius:6px">
+        {% endif %}
+        <input type="file" name="logo" accept="image/*">
+    </div>
+
+    <h3 style="margin: 24px 0 16px">Цветовая схема</h3>
+    <p style="color:#6b7280;font-size:13px;margin-bottom:16px">
+        Цвета применяются на публичной части сайта и в административной панели.
+    </p>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Основной цвет</label>
+            <div style="display:flex;gap:8px;align-items:center">
+                <input type="color" name="color_primary"
+                       id="color_primary"
+                       value="{{ settings.color_primary|default:'#2563eb' }}"
+                       style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
+                <span id="color_primary_val"
+                      style="font-size:13px;color:#6b7280">
+                    {{ settings.color_primary|default:'#2563eb' }}
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Тёмный акцент</label>
+            <div style="display:flex;gap:8px;align-items:center">
+                <input type="color" name="color_primary_dark"
+                       id="color_primary_dark"
+                       value="{{ settings.color_primary_dark|default:'#1d4ed8' }}"
+                       style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
+                <span id="color_primary_dark_val"
+                      style="font-size:13px;color:#6b7280">
+                    {{ settings.color_primary_dark|default:'#1d4ed8' }}
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Акцентный цвет</label>
+            <div style="display:flex;gap:8px;align-items:center">
+                <input type="color" name="color_accent"
+                       id="color_accent"
+                       value="{{ settings.color_accent|default:'#f59e0b' }}"
+                       style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
+                <span id="color_accent_val"
+                      style="font-size:13px;color:#6b7280">
+                    {{ settings.color_accent|default:'#f59e0b' }}
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Цвет фона</label>
+            <div style="display:flex;gap:8px;align-items:center">
+                <input type="color" name="color_bg"
+                       id="color_bg"
+                       value="{{ settings.color_bg|default:'#f9fafb' }}"
+                       style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
+                <span id="color_bg_val"
+                      style="font-size:13px;color:#6b7280">
+                    {{ settings.color_bg|default:'#f9fafb' }}
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Цвет текста</label>
+            <div style="display:flex;gap:8px;align-items:center">
+                <input type="color" name="color_text"
+                       id="color_text"
+                       value="{{ settings.color_text|default:'#111827' }}"
+                       style="width:48px;height:38px;padding:2px;border-radius:6px;border:1px solid #d1d5db;cursor:pointer">
+                <span id="color_text_val"
+                      style="font-size:13px;color:#6b7280">
+                    {{ settings.color_text|default:'#111827' }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Предпросмотр цветов -->
+    <div style="display:flex;gap:8px;margin-bottom:24px;margin-top:8px">
+        <div id="preview_primary"
+             style="width:40px;height:40px;border-radius:6px;
+                    background:{{ settings.color_primary|default:'#2563eb' }}"></div>
+        <div id="preview_primary_dark"
+             style="width:40px;height:40px;border-radius:6px;
+                    background:{{ settings.color_primary_dark|default:'#1d4ed8' }}"></div>
+        <div id="preview_accent"
+             style="width:40px;height:40px;border-radius:6px;
+                    background:{{ settings.color_accent|default:'#f59e0b' }}"></div>
+        <div id="preview_bg"
+             style="width:40px;height:40px;border-radius:6px;border:1px solid #e5e7eb;
+                    background:{{ settings.color_bg|default:'#f9fafb' }}"></div>
+        <div id="preview_text"
+             style="width:40px;height:40px;border-radius:6px;
+                    background:{{ settings.color_text|default:'#111827' }}"></div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Обновляем предпросмотр и подпись при выборе цвета
+    const colorFields = [
+        { input: 'color_primary', val: 'color_primary_val', preview: 'preview_primary' },
+        { input: 'color_primary_dark', val: 'color_primary_dark_val', preview: 'preview_primary_dark' },
+        { input: 'color_accent', val: 'color_accent_val', preview: 'preview_accent' },
+        { input: 'color_bg', val: 'color_bg_val', preview: 'preview_bg' },
+        { input: 'color_text', val: 'color_text_val', preview: 'preview_text' },
+    ];
+
+    colorFields.forEach(function(field) {
+        const input = document.getElementById(field.input);
+        const val = document.getElementById(field.val);
+        const preview = document.getElementById(field.preview);
+        input.addEventListener('input', function() {
+            val.textContent = input.value;
+            preview.style.background = input.value;
+            // Применяем цвет сразу на странице для предпросмотра
+            document.documentElement.style.setProperty(
+                '--' + field.input.replace('color_', '').replace('_', '-'),
+                input.value
+            );
+        });
+    });
+</script>
+{% endblock %}
