@@ -1,14 +1,5 @@
 /* ===== ПЕРЕМЕННЫЕ (переопределяются через /theme.css) ===== */
 :root {
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --accent: #f59e0b;
-    --color-bg: #f9fafb;
-    --color-card: #ffffff;
-    --color-text: #111827;
-    --color-text-secondary: #6b7280;
-    --color-header-text: #ffffff;
-    --color-footer-text: #e5e7eb;
     --container-width: 1200px;
     --radius: 8px;
     --shadow: 0 2px 8px rgba(0,0,0,0.08);
