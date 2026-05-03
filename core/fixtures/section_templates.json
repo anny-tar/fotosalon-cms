@@ -1,0 +1,56 @@
+[
+    {
+        "model": "core.sectiontemplate",
+        "pk": 1,
+        "fields": {
+            "name": "Баннер с кнопкой",
+            "template_name": "banner",
+            "description": "Главный баннер с заголовком, подзаголовком и кнопками CTA"
+        }
+    },
+    {
+        "model": "core.sectiontemplate",
+        "pk": 2,
+        "fields": {
+            "name": "Сетка услуг",
+            "template_name": "services_grid",
+            "description": "Карточки активных услуг салона"
+        }
+    },
+    {
+        "model": "core.sectiontemplate",
+        "pk": 3,
+        "fields": {
+            "name": "Превью портфолио",
+            "template_name": "portfolio_preview",
+            "description": "6 случайных фотографий из портфолио"
+        }
+    },
+    {
+        "model": "core.sectiontemplate",
+        "pk": 4,
+        "fields": {
+            "name": "Блок отзывов",
+            "template_name": "reviews_block",
+            "description": "Последние 3 одобренных отзыва клиентов"
+        }
+    },
+    {
+        "model": "core.sectiontemplate",
+        "pk": 5,
+        "fields": {
+            "name": "Акция / спецпредложение",
+            "template_name": "promo",
+            "description": "Яркий блок с акцией и кнопкой"
+        }
+    },
+    {
+        "model": "core.sectiontemplate",
+        "pk": 6,
+        "fields": {
+            "name": "Краткая форма записи",
+            "template_name": "booking_form_block",
+            "description": "Блок с призывом записаться онлайн"
+        }
+    }
+]
