@@ -728,3 +728,22 @@ dl dd {
     font-size: 11px;
     margin-top: 3px;
 }
+
+/* ===== DRAG & DROP ===== */
+.drag-handle {
+    cursor: grab;
+    color: var(--gray-300);
+    font-size: 18px;
+    padding: 0 8px;
+    user-select: none;
+}
+
+.drag-handle:hover { color: var(--gray-600); }
+.drag-handle:active { cursor: grabbing; }
+
+.sortable-ghost {
+    opacity: 0.4;
+    background: var(--gray-100);
+}
+
+tr.sortable-ghost td { background: var(--gray-100) !important; }

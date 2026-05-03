@@ -14,7 +14,6 @@
     {% endif %}
 </div>
 
-<!-- Фильтры -->
 <form method="get" class="filter-form">
     <select name="category" onchange="this.form.submit()">
         <option value="">Все категории</option>
@@ -30,11 +29,15 @@
         <option value="1" {% if in_stock == '1' %}selected{% endif %}>В наличии</option>
         <option value="0" {% if in_stock == '0' %}selected{% endif %}>Нет в наличии</option>
     </select>
+    <span style="color:var(--gray-600);font-size:13px">
+        Перетащите строки для изменения порядка
+    </span>
 </form>
 
 <table class="data-table">
     <thead>
         <tr>
+            <th style="width:40px"></th>
             <th>Артикул</th>
             <th>Название</th>
             <th>Категория</th>
@@ -44,14 +47,15 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="productsList">
         {% for product in products %}
-        <tr {% if product.is_low_stock %}class="row-warning"{% endif %}>
+        <tr data-id="{{ product.pk }}" {% if product.is_low_stock %}class="row-warning"{% endif %}>
+            <td><span class="drag-handle">⠿</span></td>
             <td>{{ product.article }}</td>
             <td>
                 {% if product.thumbnail %}
                     <img src="/media/{{ product.thumbnail }}"
-                         style="width:40px;height:40px;object-fit:cover;border-radius:4px">
+                         style="width:36px;height:36px;object-fit:cover;border-radius:4px;vertical-align:middle;margin-right:8px">
                 {% endif %}
                 {{ product.name }}
             </td>
@@ -71,10 +75,8 @@
                 {% endif %}
             </td>
             <td>
-                <a href="/panel/products/{{ product.pk }}/edit/"
-                   class="btn btn-sm">Изменить</a>
-                <form method="post"
-                      action="/panel/products/{{ product.pk }}/delete/"
+                <a href="/panel/products/{{ product.pk }}/edit/" class="btn btn-sm">Изменить</a>
+                <form method="post" action="/panel/products/{{ product.pk }}/delete/"
                       style="display:inline"
                       onsubmit="return confirm('Удалить товар?')">
                     {% csrf_token %}
@@ -84,7 +86,7 @@
         </tr>
         {% empty %}
         <tr>
-            <td colspan="7" class="no-data">Товаров нет</td>
+            <td colspan="8" class="no-data">Товаров нет</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -102,4 +104,10 @@
 </div>
 {% endif %}
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    initSortable('productsList', '/panel/products/reorder/');
+</script>
 {% endblock %}

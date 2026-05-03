@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_POST
 from django.db.models import F
+import json
 
 from accounts.mixins import panel_required
 from .models import Product, ProductCategory
@@ -10,10 +12,10 @@ from .models import Product, ProductCategory
 
 @panel_required
 def product_list(request):
-    products = Product.objects.select_related('category').all()
+    products = Product.objects.select_related('category').order_by('order')
 
     category_id = request.GET.get('category')
-    in_stock = request.GET.get('in_stock')
+    in_stock    = request.GET.get('in_stock')
 
     if category_id:
         products = products.filter(category_id=category_id)
@@ -22,7 +24,7 @@ def product_list(request):
     elif in_stock == '0':
         products = products.filter(quantity=0)
 
-    low_stock = products.filter(quantity__lte=F('min_quantity'))
+    low_stock = Product.objects.filter(quantity__lte=F('min_quantity'))
 
     from django.core.paginator import Paginator
     paginator = Paginator(products, 20)
@@ -63,22 +65,20 @@ def product_edit(request, pk):
 
 
 def _save_product(request, instance):
-    article = request.POST.get('article', '').strip()
-    name = request.POST.get('name', '').strip()
+    article     = request.POST.get('article', '').strip()
+    name        = request.POST.get('name', '').strip()
     category_id = request.POST.get('category')
     description = request.POST.get('description', '').strip()
-    price = request.POST.get('price', '0')
-    quantity = request.POST.get('quantity', '0')
+    price       = request.POST.get('price', '0')
+    quantity    = request.POST.get('quantity', '0')
     min_quantity = request.POST.get('min_quantity', '1')
-    is_active = request.POST.get('is_active') == 'on'
-    order = request.POST.get('order', '0')
-    image = request.FILES.get('image')
+    is_active   = request.POST.get('is_active') == 'on'
+    image       = request.FILES.get('image')
 
     if not article or not name:
         messages.error(request, 'Артикул и название обязательны.')
         return redirect('/panel/products/')
 
-    # Проверка уникальности артикула
     qs = Product.objects.filter(article=article)
     if instance:
         qs = qs.exclude(pk=instance.pk)
@@ -88,26 +88,26 @@ def _save_product(request, instance):
 
     if instance is None:
         instance = Product()
+        last = Product.objects.order_by('order').last()
+        instance.order = (last.order + 1) if last else 0
 
-    instance.article = article
-    instance.name = name
+    instance.article     = article
+    instance.name        = name
     instance.category_id = category_id or None
     instance.description = description
-    instance.price = price
-    instance.quantity = int(quantity)
+    instance.price       = price
+    instance.quantity    = int(quantity)
     instance.min_quantity = int(min_quantity)
-    instance.is_active = is_active
-    instance.order = int(order)
+    instance.is_active   = is_active
 
     if image:
-        # Конвертируем в WebP и создаём миниатюру
         from portfolio.image_service import convert_to_webp_and_thumbnail
         main_path, thumb_path = convert_to_webp_and_thumbnail(
             image,
             upload_to='products/images',
             thumb_upload_to='products/thumbnails',
         )
-        instance.image = main_path
+        instance.image     = main_path
         instance.thumbnail = thumb_path
 
     instance.save()
@@ -128,7 +128,6 @@ def product_delete(request, pk):
 
 @panel_required
 def product_export(request):
-    """Экспорт остатков товаров в Excel."""
     import openpyxl
     from openpyxl.styles import Font, PatternFill, Alignment
     from openpyxl.utils import get_column_letter
@@ -157,7 +156,6 @@ def product_export(request):
         ws.cell(row=row, column=5, value=float(product.price))
         ws.cell(row=row, column=6, value='В наличии' if product.is_in_stock else 'Нет в наличии')
 
-        # Подсвечиваем строки с низким остатком
         if product.is_low_stock:
             warn_fill = PatternFill(fill_type='solid', fgColor='FFF3CD')
             for col in range(1, 7):
@@ -176,6 +174,19 @@ def product_export(request):
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     wb.save(response)
     return response
+
+
+@panel_required
+@require_POST
+def product_reorder(request):
+    try:
+        data = json.loads(request.body)
+        order = data.get('order', [])
+        for index, pk in enumerate(order):
+            Product.objects.filter(pk=pk).update(order=index)
+        return JsonResponse({'ok': True})
+    except Exception as e:
+        return JsonResponse({'ok': False, 'error': str(e)})
 
 
 @panel_required

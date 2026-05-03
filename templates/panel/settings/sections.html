@@ -24,17 +24,15 @@
 </div>
 
 <!-- Добавить секцию -->
-<form method="post" action="/panel/settings/sections/create/"
-      class="inline-form">
+<form method="post" action="/panel/settings/sections/create/" class="inline-form">
     {% csrf_token %}
     <input type="hidden" name="page" value="{{ current_page }}">
     <select name="template" required>
-        <option value="">Выберите шаблон секции</option>
+        <option value="">Выберите тип секции</option>
         {% for t in templates %}
             <option value="{{ t.id }}">{{ t.name }}</option>
         {% endfor %}
     </select>
-    <input type="number" name="order" placeholder="Порядок" value="0" style="width:80px">
     <button type="submit" class="btn btn-primary">Добавить</button>
 </form>
 
@@ -42,16 +40,16 @@
 <table class="data-table">
     <thead>
         <tr>
-            <th>Порядок</th>
-            <th>Шаблон</th>
+            <th style="width:40px"></th>
+            <th>Тип секции</th>
             <th>Активна</th>
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="sectionsList">
         {% for section in sections %}
-        <tr>
-            <td>{{ section.order }}</td>
+        <tr data-id="{{ section.pk }}">
+            <td><span class="drag-handle">⠿</span></td>
             <td>{{ section.template.name }}</td>
             <td>
                 {% if section.is_active %}
@@ -60,9 +58,9 @@
                     <span class="badge badge-danger">Нет</span>
                 {% endif %}
             </td>
-            <td>
+            <td style="display:flex;gap:6px">
                 <a href="/panel/settings/sections/{{ section.pk }}/edit/"
-                   class="btn btn-sm">Изменить</a>
+                   class="btn btn-sm">Настроить</a>
                 <form method="post"
                       action="/panel/settings/sections/{{ section.pk }}/toggle/"
                       style="display:inline">
@@ -88,4 +86,10 @@
     </tbody>
 </table>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    initSortable('sectionsList', '/panel/settings/sections/reorder/');
+</script>
 {% endblock %}

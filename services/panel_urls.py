@@ -7,4 +7,5 @@ urlpatterns = [
     path('<int:pk>/edit/', panel_views.service_edit, name='edit'),
     path('<int:pk>/delete/', panel_views.service_delete, name='delete'),
     path('<int:pk>/toggle/', panel_views.service_toggle, name='toggle'),
+    path('reorder/', panel_views.service_reorder, name='reorder'),
 ]

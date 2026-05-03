@@ -1,5 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+import json
 
 from accounts.mixins import admin_required
 from .models import (
@@ -60,17 +63,19 @@ def contact_create(request):
         item_type = request.POST.get('type')
         label     = request.POST.get('label', '').strip()
         value     = request.POST.get('value', '').strip()
-        order     = request.POST.get('order', 0)
 
         if not label or not value:
             messages.error(request, 'Заполните описание и значение.')
             return redirect('/panel/settings/contact/')
 
+        last = ContactItem.objects.order_by('order').last()
+        order = (last.order + 1) if last else 0
+
         ContactItem.objects.create(
             type=item_type,
             label=label,
             value=value,
-            order=int(order),
+            order=order,
             is_active=True,
         )
         messages.success(request, 'Контакт добавлен.')
@@ -84,7 +89,6 @@ def contact_edit(request, pk):
         item.type  = request.POST.get('type', item.type)
         item.label = request.POST.get('label', '').strip()
         item.value = request.POST.get('value', '').strip()
-        item.order = int(request.POST.get('order', 0))
         item.save()
         messages.success(request, 'Контакт обновлён.')
         return redirect('/panel/settings/contact/')
@@ -115,6 +119,19 @@ def contact_toggle(request, pk):
 
 
 @admin_required
+@require_POST
+def contact_reorder(request):
+    try:
+        data  = json.loads(request.body)
+        order = data.get('order', [])
+        for index, pk in enumerate(order):
+            ContactItem.objects.filter(pk=pk).update(order=index)
+        return JsonResponse({'ok': True})
+    except Exception as e:
+        return JsonResponse({'ok': False, 'error': str(e)})
+
+
+@admin_required
 def smtp_settings(request):
     smtp = SmtpSettings.objects.first()
     if request.method == 'POST':
@@ -141,8 +158,8 @@ def smtp_settings(request):
 
 @admin_required
 def sections_list(request):
-    page = request.GET.get('page', 'home')
-    sections = PageSection.objects.filter(page=page).select_related('template')
+    page     = request.GET.get('page', 'home')
+    sections = PageSection.objects.filter(page=page).select_related('template').order_by('order')
     templates = SectionTemplate.objects.all()
 
     context = {
@@ -158,37 +175,32 @@ def section_create(request):
     if request.method == 'POST':
         page        = request.POST.get('page', 'home')
         template_id = request.POST.get('template')
-        order       = request.POST.get('order', 0)
-        content     = request.POST.get('content', '{}')
 
-        import json
-        try:
-            content_data = json.loads(content)
-        except Exception:
-            content_data = {}
+        last = PageSection.objects.filter(page=page).order_by('order').last()
+        order = (last.order + 1) if last else 0
 
+        import json as _json
         PageSection.objects.create(
             page=page,
             template_id=template_id,
-            order=int(order),
-            content=content_data,
+            order=order,
+            content={},
             is_active=True,
         )
         messages.success(request, 'Секция добавлена.')
-    return redirect('/panel/settings/sections/')
+    return redirect(f'/panel/settings/sections/?page={request.POST.get("page", "home")}')
 
 
 @admin_required
 def section_edit(request, pk):
     section = get_object_or_404(PageSection, pk=pk)
     if request.method == 'POST':
-        section.order     = int(request.POST.get('order', 0))
         section.is_active = request.POST.get('is_active') == 'on'
 
-        import json
+        import json as _json
         content = request.POST.get('content', '{}')
         try:
-            section.content = json.loads(content)
+            section.content = _json.loads(content)
         except Exception:
             section.content = {}
 
@@ -204,9 +216,10 @@ def section_delete(request, pk):
     if request.method != 'POST':
         return redirect('/panel/settings/sections/')
     section = get_object_or_404(PageSection, pk=pk)
+    page = section.page
     section.delete()
     messages.success(request, 'Секция удалена.')
-    return redirect('/panel/settings/sections/')
+    return redirect(f'/panel/settings/sections/?page={page}')
 
 
 @admin_required
@@ -216,4 +229,17 @@ def section_toggle(request, pk):
     section = get_object_or_404(PageSection, pk=pk)
     section.is_active = not section.is_active
     section.save()
-    return redirect('/panel/settings/sections/')
+    return redirect(f'/panel/settings/sections/?page={section.page}')
+
+
+@admin_required
+@require_POST
+def section_reorder(request):
+    try:
+        data  = json.loads(request.body)
+        order = data.get('order', [])
+        for index, pk in enumerate(order):
+            PageSection.objects.filter(pk=pk).update(order=index)
+        return JsonResponse({'ok': True})
+    except Exception as e:
+        return JsonResponse({'ok': False, 'error': str(e)})

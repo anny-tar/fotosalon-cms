@@ -25,9 +25,12 @@
             <option value="text">📝 Иное</option>
             <option value="social">🔗 Соцсеть</option>
         </select>
-        <input type="text" name="label" placeholder="Описание (напр. Администратор)" required style="min-width:200px">
-        <input type="text" name="value" placeholder="Значение" required style="min-width:250px">
-        <input type="number" name="order" value="0" style="width:70px" placeholder="Порядок">
+        <input type="text" name="label"
+               placeholder="Описание (напр. Администратор)" required
+               style="min-width:200px">
+        <input type="text" name="value"
+               placeholder="Значение" required
+               style="min-width:250px">
         <button type="submit" class="btn btn-primary">Добавить</button>
     </form>
 </details>
@@ -48,23 +51,23 @@
 <table class="data-table">
     <thead>
         <tr>
+            <th style="width:40px"></th>
             <th>Тип</th>
             <th>Описание</th>
             <th>Значение</th>
-            <th>Порядок</th>
             <th>Статус</th>
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="contactsList">
         {% for item in items %}
-        <tr>
+        <tr data-id="{{ item.pk }}">
+            <td><span class="drag-handle">⠿</span></td>
             <td>{{ item.icon }} {{ item.get_type_display }}</td>
             <td>{{ item.label }}</td>
-            <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
                 {{ item.value }}
             </td>
-            <td>{{ item.order }}</td>
             <td>
                 {% if item.is_active %}
                     <span class="badge badge-success">Активен</span>
@@ -72,7 +75,7 @@
                     <span class="badge badge-danger">Скрыт</span>
                 {% endif %}
             </td>
-            <td style="display:flex;gap:6px">
+            <td style="display:flex;gap:6px;flex-wrap:wrap">
                 <a href="/panel/settings/contact/{{ item.pk }}/edit/"
                    class="btn btn-sm">Изменить</a>
                 <form method="post"
@@ -100,4 +103,10 @@
     </tbody>
 </table>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    initSortable('contactsList', '/panel/settings/contact/reorder/');
+</script>
 {% endblock %}
