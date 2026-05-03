@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Review
-from core.models import SiteSettings, ContactInfo
+from core.models import SiteSettings, ContactItem
 
 
 def _base_context():
     return {
         'site_settings': SiteSettings.objects.first(),
-        'contact': ContactInfo.objects.first(),
+        'contact_items': ContactItem.objects.filter(is_active=True).order_by('order'),
     }
 
 

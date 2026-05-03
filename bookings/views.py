@@ -4,13 +4,12 @@ from django.utils import timezone
 from django.contrib import messages
 from .models import WorkingSlot, Booking
 from services.models import Service
-from core.models import SiteSettings, ContactInfo
-
+from core.models import SiteSettings, ContactItem
 
 def _base_context():
     return {
         'site_settings': SiteSettings.objects.first(),
-        'contact': ContactInfo.objects.first(),
+        'contact_items': ContactItem.objects.filter(is_active=True).order_by('order'),
     }
 
 

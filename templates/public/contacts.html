@@ -1,8 +1,173 @@
 {% extends 'public/base.html' %}
-{% block title %}Контакты — {{ site_settings.site_name|default:'ФотоСалон' }}{% endblock %}
+{% block title %}Контакты{% if site_settings.site_name %} — {{ site_settings.site_name }}{% endif %}{% endblock %}
+
 {% block content %}
-<div class="container" style="padding:80px 24px;text-align:center">
-    <h1 class="section-title">Контакты</h1>
-    <p class="section-subtitle">В разработке</p>
-</div>
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h1 class="section-title">Контакты</h1>
+        </div>
+
+        <div class="contacts-grid">
+
+            <!-- Телефоны -->
+            {% if phones %}
+            <div class="contacts-group">
+                <div class="contacts-group-title">📞 Телефоны</div>
+                {% for item in phones %}
+                <div class="contact-item">
+                    <a href="tel:{{ item.value }}" class="contact-value">{{ item.value }}</a>
+                    {% if item.label %}
+                        <div class="contact-label">{{ item.label }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Email и соцсети -->
+            {% if emails or socials %}
+            <div class="contacts-group">
+                {% if emails %}
+                <div class="contacts-group-title">✉️ Email</div>
+                {% for item in emails %}
+                <div class="contact-item">
+                    <a href="mailto:{{ item.value }}" class="contact-value">{{ item.value }}</a>
+                    {% if item.label %}
+                        <div class="contact-label">{{ item.label }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                {% if socials %}
+                <div class="contacts-group-title" style="margin-top:{% if emails %}20px{% else %}0{% endif %}">
+                    🔗 Соцсети
+                </div>
+                <div class="socials-list">
+                    {% for item in socials %}
+                    <a href="{{ item.value }}" target="_blank" class="social-link">
+                        {{ item.label }}
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Адреса -->
+            {% if addresses %}
+            <div class="contacts-group">
+                <div class="contacts-group-title">📍 Адреса</div>
+                {% for item in addresses %}
+                <div class="contact-item">
+                    <div class="contact-value">{{ item.value }}</div>
+                    {% if item.label %}
+                        <div class="contact-label">{{ item.label }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Иное -->
+            {% if texts %}
+            <div class="contacts-group">
+                {% for item in texts %}
+                <div class="contacts-group-title">📝 {{ item.label }}</div>
+                <div class="contact-text">{{ item.value|linebreaksbr }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Карты -->
+        {% if maps %}
+        <div class="maps-section">
+            <h2 class="section-title" style="font-size:22px;margin-bottom:20px">🗺️ Как нас найти</h2>
+
+            {% if maps|length > 1 %}
+            <!-- Вкладки -->
+            <div class="map-tabs">
+                {% for map in maps %}
+                <button class="map-tab {% if forloop.first %}map-tab--active{% endif %}"
+                        onclick="switchMap(this, 'map-{{ map.pk }}')">
+                    {{ map.label }}
+                </button>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Карты -->
+            {% for map in maps %}
+            <div class="map-frame {% if not forloop.first %}map-frame--hidden{% endif %}"
+                 id="map-{{ map.pk }}">
+                <iframe src="{{ map.value }}"
+                        width="100%"
+                        height="450"
+                        frameborder="0"
+                        allowfullscreen
+                        style="border-radius:8px;display:block">
+                </iframe>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Форма обратной связи -->
+        <div class="feedback-section">
+            <h2 class="section-title" style="font-size:22px;margin-bottom:8px">Напишите нам</h2>
+            <p class="section-subtitle" style="margin-bottom:24px">
+                Оставьте сообщение и мы свяжемся с вами
+            </p>
+
+            {% if success %}
+            <div class="alert-pub alert-success">
+                Сообщение отправлено! Мы свяжемся с вами в ближайшее время.
+            </div>
+            {% endif %}
+
+            {% if error %}
+            <div class="alert-pub alert-error">{{ error }}</div>
+            {% endif %}
+
+            <form method="post" class="pub-form card" style="padding:32px;max-width:600px">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Имя *</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Сообщение *</label>
+                    <textarea name="message" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary-pub">Отправить</button>
+            </form>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function switchMap(btn, mapId) {
+    // Убираем активный класс со всех вкладок
+    document.querySelectorAll('.map-tab').forEach(function(t) {
+        t.classList.remove('map-tab--active');
+    });
+    // Скрываем все карты
+    document.querySelectorAll('.map-frame').forEach(function(f) {
+        f.classList.add('map-frame--hidden');
+    });
+    // Показываем нужную карту и активируем вкладку
+    btn.classList.add('map-tab--active');
+    document.getElementById(mapId).classList.remove('map-frame--hidden');
+}
+</script>
 {% endblock %}

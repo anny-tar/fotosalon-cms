@@ -12,41 +12,92 @@
     <a href="/panel/settings/sections/" class="tab">Конструктор страниц</a>
 </div>
 
-<form method="post" class="detail-card">
-    {% csrf_token %}
-    <div class="form-group">
-        <label>Адрес</label>
-        <input type="text" name="address"
-               value="{{ contact.address|default:'' }}">
+<!-- Форма добавления -->
+<details class="collapsible" open>
+    <summary>+ Добавить контакт</summary>
+    <form method="post" action="/panel/settings/contact/create/" class="inline-form">
+        {% csrf_token %}
+        <select name="type" required>
+            <option value="phone">📞 Телефон</option>
+            <option value="email">✉️ Email</option>
+            <option value="address">📍 Адрес</option>
+            <option value="map">🗺️ Карта</option>
+            <option value="text">📝 Иное</option>
+            <option value="social">🔗 Соцсеть</option>
+        </select>
+        <input type="text" name="label" placeholder="Описание (напр. Администратор)" required style="min-width:200px">
+        <input type="text" name="value" placeholder="Значение" required style="min-width:250px">
+        <input type="number" name="order" value="0" style="width:70px" placeholder="Порядок">
+        <button type="submit" class="btn btn-primary">Добавить</button>
+    </form>
+</details>
+
+<!-- Подсказки -->
+<div class="detail-card" style="margin-bottom:16px;padding:16px">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:13px">
+        <div><strong>📞 Телефон</strong> — номер телефона</div>
+        <div><strong>✉️ Email</strong> — адрес электронной почты</div>
+        <div><strong>📍 Адрес</strong> — физический адрес</div>
+        <div><strong>🗺️ Карта</strong> — ссылка для встраивания с Яндекс.Карт</div>
+        <div><strong>📝 Иное</strong> — любой текст (режим работы и т.д.)</div>
+        <div><strong>🔗 Соцсеть</strong> — ссылка на профиль</div>
     </div>
-    <div class="form-group">
-        <label>Телефон</label>
-        <input type="text" name="phone"
-               value="{{ contact.phone|default:'' }}">
-    </div>
-    <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email"
-               value="{{ contact.email|default:'' }}">
-    </div>
-    <div class="form-group">
-        <label>Режим работы</label>
-        <textarea name="working_hours"
-                  rows="3">{{ contact.working_hours|default:'' }}</textarea>
-    </div>
-    <div class="form-grid">
-        <div class="form-group">
-            <label>Широта (для карты)</label>
-            <input type="text" name="map_lat"
-                   value="{{ contact.map_lat|default:'' }}">
-        </div>
-        <div class="form-group">
-            <label>Долгота (для карты)</label>
-            <input type="text" name="map_lng"
-                   value="{{ contact.map_lng|default:'' }}">
-        </div>
-    </div>
-    <button type="submit" class="btn btn-primary">Сохранить</button>
-</form>
+</div>
+
+<!-- Список контактов -->
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Тип</th>
+            <th>Описание</th>
+            <th>Значение</th>
+            <th>Порядок</th>
+            <th>Статус</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.icon }} {{ item.get_type_display }}</td>
+            <td>{{ item.label }}</td>
+            <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                {{ item.value }}
+            </td>
+            <td>{{ item.order }}</td>
+            <td>
+                {% if item.is_active %}
+                    <span class="badge badge-success">Активен</span>
+                {% else %}
+                    <span class="badge badge-danger">Скрыт</span>
+                {% endif %}
+            </td>
+            <td style="display:flex;gap:6px">
+                <a href="/panel/settings/contact/{{ item.pk }}/edit/"
+                   class="btn btn-sm">Изменить</a>
+                <form method="post"
+                      action="/panel/settings/contact/{{ item.pk }}/toggle/"
+                      style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-warning">
+                        {% if item.is_active %}Скрыть{% else %}Показать{% endif %}
+                    </button>
+                </form>
+                <form method="post"
+                      action="/panel/settings/contact/{{ item.pk }}/delete/"
+                      style="display:inline"
+                      onsubmit="return confirm('Удалить контакт?')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="no-data">Контактов нет. Добавьте первый.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}

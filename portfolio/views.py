@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import PortfolioPhoto, PortfolioGenre
-from core.models import SiteSettings, ContactInfo
+from core.models import SiteSettings, ContactItem
 
 
 def _base_context():
     return {
         'site_settings': SiteSettings.objects.first(),
-        'contact': ContactInfo.objects.first(),
+        'contact_items': ContactItem.objects.filter(is_active=True).order_by('order'),
     }
 
 
@@ -19,7 +19,6 @@ def portfolio_list(request):
     if genre_slug:
         photos = photos.filter(genre__slug=genre_slug)
 
-    # AJAX запрос — возвращаем JSON
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = [
             {

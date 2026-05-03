@@ -1,11 +1,10 @@
-from .models import SiteSettings
+from .models import SiteSettings, ContactItem
 from reviews.models import Review
 from feedback.models import FeedbackMessage
 from bookings.models import Booking
 
 
 def panel_context(request):
-    """Глобальный контекст для всех страниц панели."""
     if not request.user.is_authenticated or not request.user.is_staff:
         return {}
 

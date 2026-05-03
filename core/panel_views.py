@@ -3,7 +3,7 @@ from django.contrib import messages
 
 from accounts.mixins import admin_required
 from .models import (
-    SiteSettings, ContactInfo, SmtpSettings,
+    SiteSettings, ContactItem, SmtpSettings,
     SectionTemplate, PageSection
 )
 
@@ -16,7 +16,7 @@ def settings_view(request):
             settings_obj = SiteSettings()
 
         settings_obj.site_name            = request.POST.get('site_name', '').strip()
-        settings_obj.slogan = request.POST.get('slogan', '').strip()
+        settings_obj.slogan               = request.POST.get('slogan', '').strip()
         settings_obj.meta_title           = request.POST.get('meta_title', '').strip()
         settings_obj.meta_description     = request.POST.get('meta_description', '').strip()
         settings_obj.color_primary        = request.POST.get('color_primary', '#2563eb')
@@ -50,22 +50,68 @@ def settings_view(request):
 
 @admin_required
 def contact_settings(request):
-    contact = ContactInfo.objects.first()
+    items = ContactItem.objects.all().order_by('order', 'type')
+    return render(request, 'panel/settings/contact.html', {'items': items})
+
+
+@admin_required
+def contact_create(request):
     if request.method == 'POST':
-        if not contact:
-            contact = ContactInfo()
+        item_type = request.POST.get('type')
+        label     = request.POST.get('label', '').strip()
+        value     = request.POST.get('value', '').strip()
+        order     = request.POST.get('order', 0)
 
-        contact.address       = request.POST.get('address', '').strip()
-        contact.phone         = request.POST.get('phone', '').strip()
-        contact.email         = request.POST.get('email', '').strip()
-        contact.working_hours = request.POST.get('working_hours', '').strip()
-        contact.map_lat       = request.POST.get('map_lat') or None
-        contact.map_lng       = request.POST.get('map_lng') or None
-        contact.save()
-        messages.success(request, 'Контактные данные сохранены.')
+        if not label or not value:
+            messages.error(request, 'Заполните описание и значение.')
+            return redirect('/panel/settings/contact/')
+
+        ContactItem.objects.create(
+            type=item_type,
+            label=label,
+            value=value,
+            order=int(order),
+            is_active=True,
+        )
+        messages.success(request, 'Контакт добавлен.')
+    return redirect('/panel/settings/contact/')
+
+
+@admin_required
+def contact_edit(request, pk):
+    item = get_object_or_404(ContactItem, pk=pk)
+    if request.method == 'POST':
+        item.type  = request.POST.get('type', item.type)
+        item.label = request.POST.get('label', '').strip()
+        item.value = request.POST.get('value', '').strip()
+        item.order = int(request.POST.get('order', 0))
+        item.save()
+        messages.success(request, 'Контакт обновлён.')
         return redirect('/panel/settings/contact/')
+    return render(request, 'panel/settings/contact_edit.html', {
+        'item': item,
+        'type_choices': ContactItem.TYPE_CHOICES,
+    })
 
-    return render(request, 'panel/settings/contact.html', {'contact': contact})
+
+@admin_required
+def contact_delete(request, pk):
+    if request.method != 'POST':
+        return redirect('/panel/settings/contact/')
+    item = get_object_or_404(ContactItem, pk=pk)
+    item.delete()
+    messages.success(request, 'Контакт удалён.')
+    return redirect('/panel/settings/contact/')
+
+
+@admin_required
+def contact_toggle(request, pk):
+    if request.method != 'POST':
+        return redirect('/panel/settings/contact/')
+    item = get_object_or_404(ContactItem, pk=pk)
+    item.is_active = not item.is_active
+    item.save()
+    return redirect('/panel/settings/contact/')
 
 
 @admin_required
@@ -79,7 +125,7 @@ def smtp_settings(request):
         smtp.port       = int(request.POST.get('port', 587))
         smtp.username   = request.POST.get('username', '').strip()
         smtp.from_email = request.POST.get('from_email', '').strip()
-        smtp.use_tls = True
+        smtp.use_tls    = True
 
         password = request.POST.get('password', '').strip()
         if password:

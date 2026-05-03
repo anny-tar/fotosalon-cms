@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (
-    SiteSettings, ContactInfo, SmtpSettings,
+    SiteSettings, ContactItem, SmtpSettings,
     EmailTemplate, SectionTemplate, PageSection
 )
 
@@ -10,9 +10,11 @@ class SiteSettingsAdmin(admin.ModelAdmin):
     list_display = ('site_name',)
 
 
-@admin.register(ContactInfo)
-class ContactInfoAdmin(admin.ModelAdmin):
-    list_display = ('address', 'phone', 'email')
+@admin.register(ContactItem)
+class ContactItemAdmin(admin.ModelAdmin):
+    list_display = ('type', 'label', 'value', 'order', 'is_active')
+    list_filter = ('type', 'is_active')
+    ordering = ['order', 'type']
 
 
 @admin.register(SmtpSettings)

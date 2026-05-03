@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import SiteSettings, ContactInfo, PageSection
+from .models import SiteSettings, ContactItem, PageSection
 
 
 def theme_css(request):
@@ -46,7 +46,7 @@ def _base_context(request):
     from services.models import Service
     return {
         'site_settings': SiteSettings.objects.first(),
-        'contact': ContactInfo.objects.first(),
+        'contact_items': ContactItem.objects.filter(is_active=True).order_by('order'),
         'nav_services': Service.objects.filter(is_active=True)[:6],
     }
 
@@ -87,7 +87,16 @@ def about(request):
 
 def contacts(request):
     from feedback.models import FeedbackMessage
+
     ctx = _base_context(request)
+
+    items = ContactItem.objects.filter(is_active=True).order_by('order')
+    ctx['phones']    = items.filter(type=ContactItem.TYPE_PHONE)
+    ctx['emails']    = items.filter(type=ContactItem.TYPE_EMAIL)
+    ctx['addresses'] = items.filter(type=ContactItem.TYPE_ADDRESS)
+    ctx['maps']      = items.filter(type=ContactItem.TYPE_MAP)
+    ctx['texts']     = items.filter(type=ContactItem.TYPE_TEXT)
+    ctx['socials']   = items.filter(type=ContactItem.TYPE_SOCIAL)
 
     if request.method == 'POST':
         name    = request.POST.get('name', '').strip()

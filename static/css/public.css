@@ -807,3 +807,121 @@ body {
 
     .promo-inner { flex-direction: column; text-align: center; }
 }
+
+/* ===== КОНТАКТЫ ===== */
+.contacts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 32px;
+    margin-bottom: 48px;
+}
+
+.contacts-group {
+    background: var(--color-card);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+}
+
+.contacts-group-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+    margin-bottom: 12px;
+}
+
+.contact-item {
+    margin-bottom: 14px;
+}
+
+.contact-item:last-child { margin-bottom: 0; }
+
+.contact-value {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text);
+    display: block;
+}
+
+a.contact-value {
+    color: var(--primary);
+    transition: opacity 0.15s;
+}
+
+a.contact-value:hover { opacity: 0.8; }
+
+.contact-label {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+}
+
+.contact-text {
+    font-size: 14px;
+    color: var(--color-text);
+    line-height: 1.7;
+}
+
+.socials-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.social-link {
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--color-bg);
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--primary);
+    transition: all 0.15s;
+}
+
+.social-link:hover {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+/* ===== КАРТЫ ===== */
+.maps-section {
+    margin-bottom: 48px;
+}
+
+.map-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.map-tab {
+    padding: 8px 20px;
+    border-radius: 24px;
+    border: 2px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.map-tab:hover,
+.map-tab--active {
+    background: var(--primary);
+    color: #fff;
+}
+
+.map-frame--hidden { display: none; }
+
+/* ===== ФОРМА ОБРАТНОЙ СВЯЗИ ===== */
+.feedback-section {
+    padding-top: 48px;
+    border-top: 1px solid var(--gray-200);
+}

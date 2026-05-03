@@ -77,26 +77,66 @@ class SiteSettings(models.Model):
         return self.site_name
 
 
-class ContactInfo(models.Model):
-    address = models.CharField(max_length=500, verbose_name='Адрес')
-    phone = models.CharField(max_length=50, verbose_name='Телефон')
-    email = models.EmailField(verbose_name='Email')
-    working_hours = models.TextField(verbose_name='Режим работы')
-    map_lat = models.DecimalField(
-        max_digits=9, decimal_places=6,
-        blank=True, null=True, verbose_name='Широта'
+class ContactItem(models.Model):
+    TYPE_PHONE   = 'phone'
+    TYPE_EMAIL   = 'email'
+    TYPE_ADDRESS = 'address'
+    TYPE_MAP     = 'map'
+    TYPE_TEXT    = 'text'
+    TYPE_SOCIAL  = 'social'
+
+    TYPE_CHOICES = [
+        (TYPE_PHONE,   'Телефон'),
+        (TYPE_EMAIL,   'Email'),
+        (TYPE_ADDRESS, 'Адрес'),
+        (TYPE_MAP,     'Карта'),
+        (TYPE_TEXT,    'Иное'),
+        (TYPE_SOCIAL,  'Соцсеть'),
+    ]
+
+    TYPE_ICONS = {
+        TYPE_PHONE:   '📞',
+        TYPE_EMAIL:   '✉️',
+        TYPE_ADDRESS: '📍',
+        TYPE_MAP:     '🗺️',
+        TYPE_TEXT:    '📝',
+        TYPE_SOCIAL:  '🔗',
+    }
+
+    type = models.CharField(
+        max_length=20,
+        choices=TYPE_CHOICES,
+        verbose_name='Тип'
     )
-    map_lng = models.DecimalField(
-        max_digits=9, decimal_places=6,
-        blank=True, null=True, verbose_name='Долгота'
+    label = models.CharField(
+        max_length=255,
+        verbose_name='Описание',
+        help_text='Например: Администратор, Главный офис, ВКонтакте'
+    )
+    value = models.TextField(
+        verbose_name='Значение',
+        help_text='Номер телефона, email, адрес, ссылка на карту или текст'
+    )
+    order = models.PositiveIntegerField(
+        default=0,
+        verbose_name='Порядок'
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='Активен'
     )
 
     class Meta:
-        verbose_name = 'Контактные данные'
-        verbose_name_plural = 'Контактные данные'
+        verbose_name = 'Контактный элемент'
+        verbose_name_plural = 'Контактные элементы'
+        ordering = ['order', 'type']
 
     def __str__(self):
-        return self.address
+        return f'{self.get_type_display()} — {self.label}: {self.value[:50]}'
+
+    @property
+    def icon(self):
+        return self.TYPE_ICONS.get(self.type, '•')
 
 
 class SmtpSettings(models.Model):
