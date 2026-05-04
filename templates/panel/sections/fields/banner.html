@@ -1,0 +1,156 @@
+<h3 style="margin-bottom:16px;font-size:15px;color:#374151">Баннер</h3>
+
+<!-- Заголовок -->
+<div class="section-field-group">
+    <div class="field-row">
+        <label class="field-checkbox">
+            <input type="checkbox" name="show_title" checked>
+            Показывать заголовок
+        </label>
+    </div>
+    <div class="form-group">
+        <label>Заголовок</label>
+        <input type="text" name="title"
+               placeholder="Можно использовать {site_name}">
+    </div>
+</div>
+
+<!-- Подзаголовок -->
+<div class="section-field-group">
+    <div class="field-row">
+        <label class="field-checkbox">
+            <input type="checkbox" name="show_subtitle" checked>
+            Показывать подзаголовок
+        </label>
+    </div>
+    <div class="form-group">
+        <label>Подзаголовок</label>
+        <textarea name="subtitle" rows="2"
+                  placeholder="Краткое описание. Можно использовать {slogan}"></textarea>
+    </div>
+</div>
+
+<!-- Кнопка 1 -->
+<div class="section-field-group">
+    <div class="field-row">
+        <label class="field-checkbox">
+            <input type="checkbox" name="show_btn1" checked>
+            Показывать кнопку 1
+        </label>
+    </div>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Текст кнопки 1</label>
+            <input type="text" name="btn1_text" placeholder="Записаться">
+        </div>
+        <div class="form-group">
+            <label>Ссылка кнопки 1</label>
+            <input type="text" name="btn1_url" placeholder="/booking/">
+        </div>
+    </div>
+</div>
+
+<!-- Кнопка 2 -->
+<div class="section-field-group">
+    <div class="field-row">
+        <label class="field-checkbox">
+            <input type="checkbox" name="show_btn2" checked>
+            Показывать кнопку 2
+        </label>
+    </div>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Текст кнопки 2</label>
+            <input type="text" name="btn2_text" placeholder="Подробнее">
+        </div>
+        <div class="form-group">
+            <label>Ссылка кнопки 2</label>
+            <input type="text" name="btn2_url" placeholder="/services/">
+        </div>
+    </div>
+</div>
+
+<!-- Фоновое изображение -->
+<div class="section-field-group">
+    <div class="field-row">
+        <label class="field-checkbox">
+            <input type="checkbox" name="show_image" checked>
+            Показывать фоновое изображение
+        </label>
+    </div>
+    <div class="form-group">
+        <label>Фоновое изображение</label>
+        <input type="file" name="image_file" accept="image/*"
+               onchange="uploadBannerImage(this)">
+        <input type="hidden" name="image" id="banner_image_path">
+        <div id="banner_image_preview" style="margin-top:8px"></div>
+    </div>
+    <div class="form-group">
+        <label>Фильтр изображения</label>
+        <select name="image_filter">
+            <option value="dark">Затемнённое</option>
+            <option value="light">Засветлённое</option>
+            <option value="none">Без фильтра</option>
+        </select>
+    </div>
+</div>
+
+<!-- Выравнивание -->
+<div class="form-group">
+    <label>Выравнивание текста</label>
+    <select name="alignment">
+        <option value="left">Слева</option>
+        <option value="center">По центру</option>
+        <option value="right">Справа</option>
+    </select>
+</div>
+
+<!-- Новости -->
+<div class="section-field-group">
+    <div class="field-row">
+        <label class="field-checkbox">
+            <input type="checkbox" name="show_news">
+            Показывать блок новостей
+        </label>
+    </div>
+    <div class="form-group">
+        <label>Расположение новостей</label>
+        <select name="news_position">
+            <option value="right">Справа</option>
+            <option value="left">Слева</option>
+            <option value="bottom">Снизу</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Текст кнопки «Все новости»</label>
+        <input type="text" name="news_btn_text" placeholder="Все новости →">
+    </div>
+    <div class="form-group">
+        <label>Ссылка кнопки «Все новости»</label>
+        <input type="text" name="news_btn_url" placeholder="/news/">
+    </div>
+</div>
+
+<script>
+function uploadBannerImage(input) {
+    if (!input.files || !input.files[0]) return;
+    const formData = new FormData();
+    formData.append('image', input.files[0]);
+    formData.append('upload_to', 'sections/banner');
+    formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+    fetch('/panel/settings/sections/upload-image/', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.path) {
+            document.getElementById('banner_image_path').value = data.path;
+            document.getElementById('banner_image_preview').innerHTML =
+                '<img src="/media/' + data.path + '" style="max-height:80px;border-radius:6px">';
+            updatePreview();
+        }
+    });
+}
+</script>

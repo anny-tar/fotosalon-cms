@@ -1,0 +1,97 @@
+{% extends 'panel/base.html' %}
+{% block title %}{{ page_name }}{% endblock %}
+{% block page_title %}{{ page_name }}{% endblock %}
+{% block nav_pages %}active{% endblock %}
+
+{% block content %}
+
+<div class="toolbar">
+    <a href="/panel/pages/" class="btn btn-secondary">← Все страницы</a>
+    <a href="/{{ page_slug }}/?preview=1" target="_blank"
+       class="btn btn-secondary">Превью страницы →</a>
+</div>
+
+<!-- Добавить секцию -->
+<details class="collapsible" open>
+    <summary>+ Добавить секцию</summary>
+    <form method="post"
+          action="/panel/pages/{{ page_slug }}/sections/create/"
+          class="inline-form">
+        {% csrf_token %}
+        <select name="section_type" required>
+            <option value="">Выберите тип секции</option>
+            {% for slug, name in section_types.items %}
+                <option value="{{ slug }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Добавить</button>
+    </form>
+</details>
+
+<!-- Список секций -->
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width:40px"></th>
+            <th>Тип секции</th>
+            <th>Статус</th>
+            <th>Черновик</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="sectionsList">
+        {% for section in sections %}
+        <tr data-id="{{ section.pk }}">
+            <td><span class="drag-handle">⠿</span></td>
+            <td>{{ section.template.name }}</td>
+            <td>
+                {% if section.is_active %}
+                    <span class="badge badge-success">Активна</span>
+                {% else %}
+                    <span class="badge badge-danger">Скрыта</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if section.draft_content %}
+                    <span class="badge badge-warn">Есть черновик</span>
+                {% else %}
+                    <span style="color:var(--gray-300);font-size:12px">—</span>
+                {% endif %}
+            </td>
+            <td style="display:flex;gap:6px">
+                <a href="/panel/pages/sections/{{ section.pk }}/edit/"
+                   class="btn btn-sm">Настроить</a>
+                <form method="post"
+                      action="/panel/pages/sections/{{ section.pk }}/toggle/"
+                      style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-warning">
+                        {% if section.is_active %}Скрыть{% else %}Показать{% endif %}
+                    </button>
+                </form>
+                <form method="post"
+                      action="/panel/pages/sections/{{ section.pk }}/delete/"
+                      style="display:inline"
+                      onsubmit="return confirm('Удалить секцию?')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="no-data">
+                Секций нет. Добавьте первую.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    initSortable('sectionsList', '/panel/pages/sections/reorder/');
+</script>
+{% endblock %}

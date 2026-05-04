@@ -27,12 +27,25 @@
                     <span class="badge">{{ pending_bookings_count }}</span>
                 {% endif %}
             </a>
-            <a href="/panel/schedule/" class="nav-item {% block nav_schedule %}{% endblock %}">Расписание</a>
+            <a href="/panel/schedule/" class="nav-item {% block nav_schedule %}{% endblock %}">
+                Расписание
+            </a>
             <div class="nav-group-title">Контент</div>
-            <a href="/panel/services/" class="nav-item {% block nav_services %}{% endblock %}">Услуги</a>
-            <a href="/panel/portfolio/" class="nav-item {% block nav_portfolio %}{% endblock %}">Портфолио</a>
-            <a href="/panel/products/" class="nav-item {% block nav_products %}{% endblock %}">Товары</a>
-            <a href="/panel/news/" class="nav-item {% block nav_news %}{% endblock %}">Новости</a>
+            <a href="/panel/pages/" class="nav-item {% block nav_pages %}{% endblock %}">
+                Страницы
+            </a>
+            <a href="/panel/services/" class="nav-item {% block nav_services %}{% endblock %}">
+                Услуги
+            </a>
+            <a href="/panel/portfolio/" class="nav-item {% block nav_portfolio %}{% endblock %}">
+                Портфолио
+            </a>
+            <a href="/panel/products/" class="nav-item {% block nav_products %}{% endblock %}">
+                Товары
+            </a>
+            <a href="/panel/news/" class="nav-item {% block nav_news %}{% endblock %}">
+                Новости
+            </a>
             <a href="/panel/reviews/" class="nav-item {% block nav_reviews %}{% endblock %}">
                 Отзывы
                 {% if pending_reviews_count %}
@@ -47,8 +60,12 @@
             </a>
             <div class="nav-group-title">Система</div>
             {% if request.user.is_superuser %}
-            <a href="/panel/users/" class="nav-item {% block nav_users %}{% endblock %}">Пользователи</a>
-            <a href="/panel/settings/" class="nav-item {% block nav_settings %}{% endblock %}">Настройки</a>
+            <a href="/panel/users/" class="nav-item {% block nav_users %}{% endblock %}">
+                Пользователи
+            </a>
+            <a href="/panel/settings/" class="nav-item {% block nav_settings %}{% endblock %}">
+                Настройки
+            </a>
             {% endif %}
         </nav>
         <div class="sidebar-footer">

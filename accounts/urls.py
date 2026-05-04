@@ -8,6 +8,7 @@ urlpatterns = [
 
     path('bookings/', include(('bookings.panel_urls', 'bookings_panel'))),
     path('schedule/', include(('bookings.schedule_urls', 'schedule_panel'))),
+    path('pages/', include(('core.pages_urls', 'pages_panel'))),
     path('portfolio/', include(('portfolio.panel_urls', 'portfolio_panel'))),
     path('products/', include(('products.panel_urls', 'products_panel'))),
     path('services/', include(('services.panel_urls', 'services_panel'))),

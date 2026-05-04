@@ -16,4 +16,6 @@ urlpatterns = [
     path('sections/<int:pk>/delete/', panel_views.section_delete, name='section_delete'),
     path('sections/<int:pk>/toggle/', panel_views.section_toggle, name='section_toggle'),
     path('sections/reorder/', panel_views.section_reorder, name='section_reorder'),
+    path('sections/preview/', panel_views.section_preview, name='section_preview'),
+    path('sections/upload-image/', panel_views.section_upload_image, name='section_upload_image'),
 ]

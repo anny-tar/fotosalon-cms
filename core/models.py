@@ -189,6 +189,11 @@ class PageSection(models.Model):
     page = models.CharField(
         max_length=10, choices=PAGE_CHOICES, verbose_name='Страница'
     )
+    draft_content = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name='Черновик'
+    )
     template = models.ForeignKey(
         SectionTemplate, on_delete=models.PROTECT, verbose_name='Шаблон секции'
     )

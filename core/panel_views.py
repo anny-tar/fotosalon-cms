@@ -243,3 +243,69 @@ def section_reorder(request):
         return JsonResponse({'ok': True})
     except Exception as e:
         return JsonResponse({'ok': False, 'error': str(e)})
+
+from django.views.decorators.http import require_POST as _require_POST
+
+@admin_required
+def section_preview(request):
+    """Рендерит превью секции по переданным данным."""
+    import json as _json
+    template_name = request.POST.get('template_name', '')
+    content_raw   = request.POST.get('content', '{}')
+
+    try:
+        content = _json.loads(content_raw)
+    except Exception:
+        content = {}
+
+    # Подгружаем нужные данные для секции
+    extra = {}
+    if template_name == 'banner' and content.get('show_news'):
+        from news.models import News
+        extra['preview_news'] = News.objects.filter(
+            is_published=True
+        ).order_by('-published_at')[:3]
+
+    from core.models import SiteSettings
+    settings = SiteSettings.objects.first()
+
+    # Подставляем переменные
+    def replace_vars(text):
+        if not text:
+            return text
+        replacements = {
+            '{site_name}': settings.site_name if settings else '',
+            '{slogan}':    settings.slogan if settings else '',
+        }
+        for k, v in replacements.items():
+            text = text.replace(k, v or '')
+        return text
+
+    content['title']    = replace_vars(content.get('title', ''))
+    content['subtitle'] = replace_vars(content.get('subtitle', ''))
+
+    template_path = f'public/sections/{template_name}.html'
+    try:
+        return render(request, template_path, {
+            'section': type('obj', (object,), {'content': content})(),
+            'site_settings': settings,
+            **extra,
+        })
+    except Exception as e:
+        from django.http import HttpResponse
+        return HttpResponse(f'<p style="color:red">Ошибка: {e}</p>')
+
+@admin_required
+@require_POST
+def section_upload_image(request):
+    image = request.FILES.get('image')
+    upload_to = request.POST.get('upload_to', 'sections')
+    if not image:
+        return JsonResponse({'error': 'Нет файла'}, status=400)
+    from portfolio.image_service import convert_to_webp_and_thumbnail
+    main_path, _ = convert_to_webp_and_thumbnail(
+        image,
+        upload_to=upload_to,
+        thumb_upload_to=upload_to + '/thumbnails',
+    )
+    return JsonResponse({'path': main_path})

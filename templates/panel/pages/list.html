@@ -1,0 +1,26 @@
+{% extends 'panel/base.html' %}
+{% block title %}Страницы{% endblock %}
+{% block page_title %}Конструктор страниц{% endblock %}
+{% block nav_pages %}active{% endblock %}
+
+{% block content %}
+
+<div class="cards-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:8px">
+    {% for page in pages %}
+    <div class="detail-card" style="margin-top:0">
+        <h2 style="font-size:16px;margin-bottom:8px">{{ page.name }}</h2>
+        <div style="font-size:13px;color:var(--gray-600);margin-bottom:16px">
+            Секций: {{ page.count }} (активных: {{ page.active }})
+        </div>
+        <div style="display:flex;gap:8px">
+            <a href="/panel/pages/{{ page.slug }}/sections/"
+               class="btn btn-primary">Редактировать</a>
+            <a href="/{{ page.slug }}/?preview=1"
+               target="_blank"
+               class="btn btn-secondary">Превью →</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -137,5 +137,26 @@
 
 <script src="/static/js/public.js"></script>
 {% block extra_js %}{% endblock %}
+
+{% if is_preview %}
+<div style="
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #1e293b;
+    color: #fff;
+    padding: 10px 24px;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 9999;
+">
+    <span>👁 Режим превью — посетители не видят черновики</span>
+    <a href="/panel/pages/" style="color:#f59e0b;text-decoration:none">
+        ← Вернуться в редактор
+    </a>
+</div>
+{% endif %}
+
 </body>
 </html>

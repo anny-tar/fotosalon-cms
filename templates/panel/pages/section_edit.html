@@ -1,0 +1,196 @@
+{% extends 'panel/base.html' %}
+{% block title %}Настройка — {{ section_type_name }}{% endblock %}
+{% block page_title %}{{ section_type_name }}{% endblock %}
+{% block nav_pages %}active{% endblock %}
+
+{% block content %}
+
+<a href="/panel/pages/{{ section.page }}/sections/"
+   class="btn btn-secondary">← Назад</a>
+
+<div class="section-editor">
+
+    <!-- Форма -->
+    <div class="section-editor-form">
+        <div class="detail-card">
+            <div class="form-group" style="margin-bottom:16px">
+                <label class="field-checkbox">
+                    <input type="checkbox" id="is_active"
+                           {% if section.is_active %}checked{% endif %}>
+                    Секция активна
+                </label>
+            </div>
+
+            <div id="fields-container">
+                {% include 'panel/pages/fields/'|add:template_name|add:'.html' %}
+            </div>
+
+            <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap">
+                <button type="button" class="btn btn-primary"
+                        onclick="publishSection()">
+                    Сохранить и опубликовать
+                </button>
+                <button type="button" class="btn btn-secondary"
+                        onclick="saveDraft()">
+                    Сохранить черновик
+                </button>
+                <a id="previewPageLink"
+                   href="/{{ section.page }}/?preview=1#section-{{ section.pk }}"
+                   target="_blank"
+                   class="btn btn-secondary"
+                   style="display:none">
+                    Превью страницы →
+                </a>
+            </div>
+
+            <div id="saveStatus" style="margin-top:8px;font-size:13px;color:var(--gray-600)"></div>
+        </div>
+    </div>
+
+    <!-- Превью -->
+    <div class="section-editor-preview">
+        <div class="preview-label-panel">
+            Живое превью — обновляется автоматически
+        </div>
+        <iframe id="previewFrame"
+                style="width:100%;border:1px dashed #d1d5db;border-radius:8px;min-height:300px;background:#f9fafb"
+                frameborder="0"></iframe>
+    </div>
+
+</div>
+
+<script>
+const SECTION_PK    = {{ section.pk }};
+const TEMPLATE_NAME = '{{ template_name }}';
+const SECTION_PAGE  = '{{ section.page }}';
+
+function getContent() {
+    const inputs = document.querySelectorAll(
+        '#fields-container input, #fields-container select, #fields-container textarea'
+    );
+    const content = {};
+    inputs.forEach(function(inp) {
+        if (!inp.name || inp.type === 'file') return;
+        if (inp.type === 'checkbox') content[inp.name] = inp.checked;
+        else content[inp.name] = inp.value;
+    });
+    return content;
+}
+
+function updatePreview() {
+    const content = getContent();
+    const frame   = document.getElementById('previewFrame');
+
+    fetch('/panel/pages/sections/preview/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        body: new URLSearchParams({
+            template_name: TEMPLATE_NAME,
+            content: JSON.stringify(content),
+        }),
+    })
+    .then(r => r.text())
+    .then(html => {
+        frame.srcdoc = html;
+        frame.onload = function() {
+            try {
+                const h = frame.contentDocument.body.scrollHeight;
+                frame.style.height = Math.max(h, 200) + 'px';
+            } catch(e) {}
+        };
+    });
+}
+
+function saveDraft() {
+    const content = getContent();
+    setStatus('Сохраняем черновик...');
+
+    fetch('/panel/pages/sections/' + SECTION_PK + '/draft/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        body: new URLSearchParams({ content: JSON.stringify(content) }),
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok) {
+            setStatus('Черновик сохранён');
+            const link = document.getElementById('previewPageLink');
+            link.href = data.preview_url;
+            link.style.display = 'inline-flex';
+        }
+    });
+}
+
+function publishSection() {
+    const content  = getContent();
+    const isActive = document.getElementById('is_active').checked;
+    setStatus('Публикуем...');
+
+    fetch('/panel/pages/sections/' + SECTION_PK + '/edit/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            is_active: isActive ? 'on' : '',
+            content:   JSON.stringify(content),
+        }),
+    })
+    .then(r => {
+        if (r.ok) {
+            setStatus('Опубликовано!');
+            setTimeout(() => {
+                window.location.href = '/panel/pages/' + SECTION_PAGE + '/sections/';
+            }, 800);
+        }
+    });
+}
+
+function setStatus(msg) {
+    document.getElementById('saveStatus').textContent = msg;
+}
+
+function getCookie(name) {
+    let value = null;
+    document.cookie.split(';').forEach(function(c) {
+        c = c.trim();
+        if (c.startsWith(name + '='))
+            value = decodeURIComponent(c.slice(name.length + 1));
+    });
+    return value;
+}
+
+// Автообновление превью
+document.addEventListener('input', function(e) {
+    if (e.target.closest('#fields-container')) {
+        clearTimeout(window._pt);
+        window._pt = setTimeout(updatePreview, 600);
+    }
+});
+document.addEventListener('change', function(e) {
+    if (e.target.closest('#fields-container')) {
+        clearTimeout(window._pt);
+        window._pt = setTimeout(updatePreview, 300);
+    }
+});
+
+// Заполняем форму из сохранённых данных
+window.addEventListener('load', function() {
+    const saved = {{ section.content|safe }};
+    const draft = {{ section.draft_content|safe }};
+    const data  = Object.keys(draft).length > 0 ? draft : saved;
+
+    if (data && Object.keys(data).length > 0) {
+        Object.entries(data).forEach(function([key, val]) {
+            const el = document.querySelector('[name="' + key + '"]');
+            if (!el) return;
+            if (el.type === 'checkbox') el.checked = !!val;
+            else el.value = val;
+        });
+    }
+    updatePreview();
+});
+</script>
+
+{% endblock %}

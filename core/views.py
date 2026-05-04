@@ -54,16 +54,29 @@ def _base_context(request):
 def home(request):
     from portfolio.models import PortfolioPhoto
     from reviews.models import Review
+    from news.models import News
+
+    is_preview = request.GET.get('preview') == '1' and request.user.is_staff
 
     sections = PageSection.objects.filter(
         page='home', is_active=True
     ).select_related('template').order_by('order')
 
+    # В режиме превью подменяем content на draft_content
+    if is_preview:
+        for section in sections:
+            if section.draft_content:
+                section.content = section.draft_content
+
     ctx = _base_context(request)
-    ctx['sections'] = sections
+    ctx['sections']          = sections
+    ctx['is_preview']        = is_preview
     ctx['portfolio_preview'] = PortfolioPhoto.objects.filter(
         is_active=True
     ).order_by('?')[:6]
+    ctx['preview_news'] = News.objects.filter(
+        is_published=True
+    ).order_by('-published_at')[:3]
     ctx['latest_reviews'] = Review.objects.filter(
         is_approved=True, is_hidden=False
     ).select_related('reply').order_by('-created_at')[:3]
@@ -72,13 +85,25 @@ def home(request):
 
 def about(request):
     from reviews.models import Review
+    from news.models import News
+
+    is_preview = request.GET.get('preview') == '1' and request.user.is_staff
 
     sections = PageSection.objects.filter(
         page='about', is_active=True
     ).select_related('template').order_by('order')
 
+    if is_preview:
+        for section in sections:
+            if section.draft_content:
+                section.content = section.draft_content
+
     ctx = _base_context(request)
-    ctx['sections'] = sections
+    ctx['sections']     = sections
+    ctx['is_preview']   = is_preview
+    ctx['preview_news'] = News.objects.filter(
+        is_published=True
+    ).order_by('-published_at')[:3]
     ctx['latest_reviews'] = Review.objects.filter(
         is_approved=True, is_hidden=False
     ).select_related('reply').order_by('-created_at')[:3]
