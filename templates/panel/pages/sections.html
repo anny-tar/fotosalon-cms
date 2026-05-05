@@ -6,9 +6,9 @@
 {% block content %}
 
 <div class="toolbar">
-    <a href="/panel/pages/" class="btn btn-secondary">← Все страницы</a>
-    <a href="/{{ page_slug }}/?preview=1" target="_blank"
-       class="btn btn-secondary">Превью страницы →</a>
+    <a href="{% if page_slug == 'home' %}/?preview=1{% else %}/{{ page_slug }}/?preview=1{% endif %}"
+        target="_blank"
+        class="btn btn-secondary">Превью страницы →</a>
 </div>
 
 <!-- Добавить секцию -->

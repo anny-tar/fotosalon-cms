@@ -1,33 +1,44 @@
 {% extends 'public/base.html' %}
 {% load panel_tags %}
 
-{% block title %}{{ site_settings.site_name|default:'ФотоСалон' }}{% endblock %}
+{% block title %}{{ site_settings.site_name }}{% endblock %}
 
 {% block content %}
 {% for section in sections %}
-    {% if section.template.template_name == 'banner' %}
-        {% include 'public/sections/banner.html' %}
-    {% elif section.template.template_name == 'services_grid' %}
+    {% with tn=section.template.template_name %}
+    {% if tn == 'banner' %}
+        {% include 'public/sections/banner.html' with preview_news=preview_news %}
+    {% elif tn == 'services_grid' %}
         {% include 'public/sections/services_grid.html' %}
-    {% elif section.template.template_name == 'portfolio_preview' %}
-        {% include 'public/sections/portfolio_preview.html' %}
-    {% elif section.template.template_name == 'reviews_block' %}
+    {% elif tn == 'products_grid' %}
+        {% include 'public/sections/products_grid.html' %}
+    {% elif tn == 'portfolio' %}
+        {% include 'public/sections/portfolio.html' %}
+    {% elif tn == 'reviews_block' %}
         {% include 'public/sections/reviews_block.html' %}
-    {% elif section.template.template_name == 'promo' %}
+    {% elif tn == 'news_preview' %}
+        {% include 'public/sections/news_preview.html' %}
+    {% elif tn == 'text_block' %}
+        {% include 'public/sections/text_block.html' %}
+    {% elif tn == 'image_text' %}
+        {% include 'public/sections/image_text.html' %}
+    {% elif tn == 'cta' %}
+        {% include 'public/sections/cta.html' %}
+    {% elif tn == 'promo' %}
         {% include 'public/sections/promo.html' %}
-    {% elif section.template.template_name == 'booking_form_block' %}
-        {% include 'public/sections/booking_form_block.html' %}
+    {% elif tn == 'faq' %}
+        {% include 'public/sections/faq.html' %}
+    {% elif tn == 'table_block' %}
+        {% include 'public/sections/table_block.html' %}
+    {% elif tn == 'person_block' %}
+        {% include 'public/sections/person_block.html' %}
     {% endif %}
+    {% endwith %}
 {% empty %}
-    <!-- Заглушка если секции не настроены -->
-    <section class="section" style="text-align:center">
-        <div class="container">
-            <h1 class="section-title">{{ site_settings.site_name|default:'ФотоСалон' }}</h1>
-            <p class="section-subtitle">{{ site_settings.slogan|default:'Профессиональная фотография' }}</p>
-            <div style="margin-top:32px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
-                <a href="/services/" class="btn-primary-pub">Наши услуги</a>
-                <a href="/booking/" class="btn-accent">Записаться</a>
-            </div>
+    <section class="section">
+        <div class="container" style="max-width:800px">
+            <h1 class="section-title">Главная</h1>
+            <p class="section-subtitle">Информация пока не добавлена.</p>
         </div>
     </section>
 {% endfor %}

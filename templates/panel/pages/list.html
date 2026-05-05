@@ -15,9 +15,9 @@
         <div style="display:flex;gap:8px">
             <a href="/panel/pages/{{ page.slug }}/sections/"
                class="btn btn-primary">Редактировать</a>
-            <a href="/{{ page.slug }}/?preview=1"
-               target="_blank"
-               class="btn btn-secondary">Превью →</a>
+            <a href="{% if page.slug == 'home' %}/?preview=1{% else %}/{{ page.slug }}/?preview=1{% endif %}"
+                target="_blank"
+                class="btn btn-secondary">Превью →</a>
         </div>
     </div>
     {% endfor %}

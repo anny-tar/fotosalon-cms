@@ -158,7 +158,14 @@ def section_draft_save(request, pk):
         section.draft_content = {}
     section.save()
 
-    preview_url = f'/{section.page}/?preview=1#section-{section.pk}'
+    page_url = '/' if section.page == 'home' else f'/{section.page}/'
+    if section.page == 'home':
+        page_url = '/'
+    elif section.page == 'about':
+        page_url = '/about/'
+    else:
+        page_url = f'/{section.page}/'
+    preview_url = f'{page_url}?preview=1#section-{section.pk}'
     return JsonResponse({'ok': True, 'preview_url': preview_url})
 
 
