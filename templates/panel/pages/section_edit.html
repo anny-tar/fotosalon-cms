@@ -13,13 +13,6 @@
     <!-- Форма -->
     <div class="section-editor-form">
         <div class="detail-card">
-            <div class="form-group" style="margin-bottom:16px">
-                <label class="field-checkbox">
-                    <input type="checkbox" id="is_active"
-                           {% if section.is_active %}checked{% endif %}>
-                    Секция активна
-                </label>
-            </div>
 
             <div id="fields-container">
                 {% include 'panel/pages/fields/'|add:template_name|add:'.html' %}
@@ -122,8 +115,7 @@ function saveDraft() {
 }
 
 function publishSection() {
-    const content  = getContent();
-    const isActive = document.getElementById('is_active').checked;
+    const content = getContent();
     setStatus('Публикуем...');
 
     fetch('/panel/pages/sections/' + SECTION_PK + '/edit/', {
@@ -133,8 +125,8 @@ function publishSection() {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-            is_active: isActive ? 'on' : '',
-            content:   JSON.stringify(content),
+            is_active: '{{ section.is_active|yesno:"on," }}',
+            content: JSON.stringify(content),
         }),
     })
     .then(r => {
@@ -177,16 +169,16 @@ document.addEventListener('change', function(e) {
 
 // Заполняем форму из сохранённых данных
 window.addEventListener('load', function() {
-    const saved = {{ section.content|safe }};
-    const draft = {{ section.draft_content|safe }};
+    const saved = {{ content_json|safe }};
+    const draft = {{ draft_json|safe }};
     const data  = Object.keys(draft).length > 0 ? draft : saved;
 
     if (data && Object.keys(data).length > 0) {
         Object.entries(data).forEach(function([key, val]) {
             const el = document.querySelector('[name="' + key + '"]');
             if (!el) return;
-            if (el.type === 'checkbox') el.checked = !!val;
-            else el.value = val;
+            if (el.type === 'checkbox') el.checked = val === true;
+            else if (el.value !== undefined) el.value = val;
         });
     }
     updatePreview();

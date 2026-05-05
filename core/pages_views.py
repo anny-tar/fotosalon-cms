@@ -99,11 +99,11 @@ def section_create(request, page):
 
 
 @admin_required
+@admin_required
 def section_edit(request, pk):
     section = get_object_or_404(PageSection, pk=pk)
 
     if request.method == 'POST':
-        # Публикуем черновик как основной контент
         content_raw = request.POST.get('content', '{}')
         is_active   = request.POST.get('is_active') == 'on'
         try:
@@ -116,14 +116,16 @@ def section_edit(request, pk):
         messages.success(request, 'Секция сохранена.')
         return redirect(f'/panel/pages/{section.page}/sections/')
 
+    import json as _json
     template_name = section.template.template_name
     context = {
-        'section': section,
-        'template_name': template_name,
+        'section':           section,
+        'template_name':     template_name,
         'section_type_name': SECTION_TYPES.get(template_name, template_name),
+        'content_json':      _json.dumps(section.content),
+        'draft_json':        _json.dumps(section.draft_content),
     }
     return render(request, 'panel/pages/section_edit.html', context)
-
 
 @admin_required
 def section_delete(request, pk):
