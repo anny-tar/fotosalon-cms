@@ -1,0 +1,17 @@
+{% with c=section.content %}
+{% if c.show_title and c.title %}
+    <h2 class="section-title">{{ c.title }}</h2>
+{% endif %}
+{% if c.show_subtitle and c.subtitle %}
+    <p class="section-subtitle" style="margin-bottom:12px">{{ c.subtitle }}</p>
+{% endif %}
+{% if c.text %}
+    <div class="image-text-body">{{ c.text|linebreaks }}</div>
+{% endif %}
+{% if c.show_btn and c.btn_text %}
+    <a href="{{ c.btn_url|default:'#' }}"
+       class="btn-primary-pub" style="margin-top:16px;display:inline-block">
+        {{ c.btn_text }}
+    </a>
+{% endif %}
+{% endwith %}

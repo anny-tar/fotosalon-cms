@@ -336,7 +336,8 @@ def _get_section_extra(template_name, content):
         extra['section_news'] = News.objects.filter(
             is_published=True
         ).order_by('-published_at')[:count]
-
+    elif template_name == 'image_text':
+        pass  # данные берутся из content.images напрямую
     return extra
 
 

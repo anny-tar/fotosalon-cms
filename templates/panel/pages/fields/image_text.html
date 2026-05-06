@@ -1,3 +1,194 @@
-<p style="color:#6b7280;font-size:13px;padding:12px">
-    Поля для этого типа секции будут добавлены позже.
-</p>
+<h3 style="margin-bottom:16px;font-size:15px;color:#374151">Текст + Изображение</h3>
+
+<!-- Заголовок -->
+<div class="section-field-group">
+    <label class="field-checkbox">
+        <input type="checkbox" name="show_title" checked>
+        Показывать заголовок
+    </label>
+    <div class="form-group" style="margin-top:8px">
+        <input type="text" name="title" placeholder="Заголовок секции">
+    </div>
+</div>
+
+<!-- Подзаголовок -->
+<div class="section-field-group">
+    <label class="field-checkbox">
+        <input type="checkbox" name="show_subtitle" checked>
+        Показывать подзаголовок
+    </label>
+    <div class="form-group" style="margin-top:8px">
+        <input type="text" name="subtitle" placeholder="Подзаголовок">
+    </div>
+</div>
+
+<!-- Текст -->
+<div class="form-group">
+    <label>Основной текст</label>
+    <textarea name="text" rows="4"
+              placeholder="Основной текст секции..."></textarea>
+</div>
+
+<!-- Изображения -->
+<div class="section-field-group">
+    <div class="form-group">
+        <label>Фотографии</label>
+        <input type="file" accept="image/*" multiple
+               onchange="uploadMultipleImages(this)">
+        <small style="color:#6b7280;font-size:11px;margin-top:3px;display:block">
+            Можно загрузить несколько фотографий
+        </small>
+        <input type="hidden" name="images" id="images_json" value="[]">
+    </div>
+    <div id="images_preview"
+         style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div>
+
+    <!-- Вариант отображения -->
+    <div class="form-group" style="margin-top:12px">
+        <label>Вариант отображения фото</label>
+        <select name="photo_display">
+            <option value="gallery">Галерея (первое большое + миниатюры)</option>
+            <option value="grid">Сетка</option>
+            <option value="slider">Слайдер</option>
+        </select>
+    </div>
+
+    <!-- Расположение -->
+    <div class="form-group">
+        <label>Расположение фото</label>
+        <select name="photo_position">
+            <option value="right">Справа от текста</option>
+            <option value="left">Слева от текста</option>
+            <option value="top">Сверху (во всю ширину)</option>
+            <option value="bottom">Снизу (во всю ширину)</option>
+        </select>
+    </div>
+
+    <!-- Размер (только для лево/право) -->
+    <div class="form-group" id="photo_size_group">
+        <label>Размер блока фото</label>
+        <select name="photo_size">
+            <option value="30">30%</option>
+            <option value="40" selected>40%</option>
+            <option value="50">50%</option>
+        </select>
+    </div>
+</div>
+
+<!-- Выравнивание текста -->
+<div class="form-group">
+    <label>Выравнивание текста</label>
+    <select name="text_align">
+        <option value="left">Слева</option>
+        <option value="center">По центру</option>
+        <option value="right">Справа</option>
+    </select>
+</div>
+
+<!-- Кнопка -->
+<div class="section-field-group">
+    <label class="field-checkbox">
+        <input type="checkbox" name="show_btn">
+        Показывать кнопку
+    </label>
+    <div class="form-grid" style="margin-top:8px">
+        <div class="form-group">
+            <label>Текст кнопки</label>
+            <input type="text" name="btn_text" placeholder="Подробнее">
+        </div>
+        <div class="form-group">
+            <label>Ссылка</label>
+            <input type="text" name="btn_url" placeholder="/about/">
+        </div>
+    </div>
+</div>
+
+<!-- Фон -->
+<div class="form-group">
+    <label>Фон секции</label>
+    <select name="bg">
+        <option value="main">Основной</option>
+        <option value="card">Карточный</option>
+    </select>
+</div>
+
+<script>
+// Показываем/скрываем размер фото в зависимости от расположения
+document.querySelector('[name="photo_position"]').addEventListener('change', function() {
+    const sizeGroup = document.getElementById('photo_size_group');
+    sizeGroup.style.display = ['top','bottom'].includes(this.value) ? 'none' : '';
+});
+
+async function uploadMultipleImages(input) {
+    if (!input.files || !input.files.length) return;
+    const files = Array.from(input.files);
+    const existing = JSON.parse(document.getElementById('images_json').value || '[]');
+    const preview  = document.getElementById('images_preview');
+
+    for (const file of files) {
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('upload_to', 'sections/image_text');
+        formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+        const r    = await fetch('/panel/pages/sections/upload-image/', { method: 'POST', body: formData });
+        const data = await r.json();
+
+        if (data.path) {
+            existing.push(data.path);
+            document.getElementById('images_json').value = JSON.stringify(existing);
+
+            const wrap = document.createElement('div');
+            wrap.style.cssText = 'position:relative;display:inline-block';
+            wrap.innerHTML = `
+                <img src="/media/${data.path}"
+                     style="width:64px;height:64px;object-fit:cover;border-radius:6px">
+                <button type="button"
+                        style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:#dc2626;color:#fff;border:none;font-size:10px;cursor:pointer;line-height:1"
+                        onclick="removeImage(this, '${data.path}')">✕</button>`;
+            preview.appendChild(wrap);
+            updatePreview();
+        }
+    }
+    input.value = '';
+}
+
+function removeImage(btn, path) {
+    const existing = JSON.parse(document.getElementById('images_json').value || '[]');
+    const updated  = existing.filter(p => p !== path);
+    document.getElementById('images_json').value = JSON.stringify(updated);
+    btn.parentElement.remove();
+    updatePreview();
+}
+
+// Восстанавливаем превью изображений при загрузке формы
+function restoreImagePreviews(images) {
+    const preview = document.getElementById('images_preview');
+    preview.innerHTML = '';
+    images.forEach(function(path) {
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative;display:inline-block';
+        wrap.innerHTML = `
+            <img src="/media/${path}"
+                 style="width:64px;height:64px;object-fit:cover;border-radius:6px">
+            <button type="button"
+                    style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:#dc2626;color:#fff;border:none;font-size:10px;cursor:pointer;line-height:1"
+                    onclick="removeImage(this, '${path}')">✕</button>`;
+        preview.appendChild(wrap);
+    });
+}
+
+document.addEventListener('sectionDataLoaded', function(e) {
+    const data = e.detail;
+    if (data.images && Array.isArray(data.images)) {
+        document.getElementById('images_json').value = JSON.stringify(data.images);
+        restoreImagePreviews(data.images);
+    }
+    // Показываем/скрываем размер фото
+    const pos = document.querySelector('[name="photo_position"]');
+    if (pos) {
+        const sizeGroup = document.getElementById('photo_size_group');
+        sizeGroup.style.display = ['top','bottom'].includes(pos.value) ? 'none' : '';
+    }
+});
+</script>

@@ -182,8 +182,13 @@ window.addEventListener('load', function() {
             const el = document.querySelector('[name="' + key + '"]');
             if (!el) return;
             if (el.type === 'checkbox') el.checked = val === true;
-            else el.value = val;
+            else if (el.tagName === 'SELECT') el.value = val;
+            else if (el.value !== undefined) el.value = val;
         });
+
+        // Уведомляем поля что данные загружены
+        const event = new CustomEvent('sectionDataLoaded', { detail: data });
+        document.dispatchEvent(event);
     }
     updatePreview();
 });

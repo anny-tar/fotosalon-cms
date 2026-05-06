@@ -1,1 +1,42 @@
-{% comment %}Секция в разработке{% endcomment %}
+{% with c=section.content %}
+{% if c %}
+
+<section class="pub-image-text
+    {% if c.bg == 'card' %}pub-section--card{% else %}pub-section--main{% endif %}">
+    <div class="container">
+
+        {% if c.photo_position == 'top' %}
+            {% include 'public/sections/image_text/_photos.html' with full_width=True %}
+            <div class="image-text-text image-text-text--full
+                         image-text-text--{{ c.text_align|default:'left' }}"
+                 style="margin-top:24px">
+                {% include 'public/sections/image_text/_text.html' %}
+            </div>
+
+        {% elif c.photo_position == 'bottom' %}
+            <div class="image-text-text image-text-text--full
+                         image-text-text--{{ c.text_align|default:'left' }}"
+                 style="margin-bottom:24px">
+                {% include 'public/sections/image_text/_text.html' %}
+            </div>
+            {% include 'public/sections/image_text/_photos.html' with full_width=True %}
+
+        {% else %}
+            <div class="image-text-layout
+                {% if c.photo_position == 'left' %}image-text-layout--reversed{% endif %}"
+                style="--photo-size: {{ c.photo_size|default:'40' }}%">
+                <div class="image-text-photos">
+                    {% include 'public/sections/image_text/_photos.html' %}
+                </div>
+                <div class="image-text-text
+                             image-text-text--{{ c.text_align|default:'left' }}">
+                    {% include 'public/sections/image_text/_text.html' %}
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% endif %}
+{% endwith %}

@@ -1,0 +1,54 @@
+{% with c=section.content %}
+{% if c.images %}
+
+{% if c.photo_display == 'gallery' %}
+<div class="it-gallery {% if full_width %}it-gallery--full{% endif %}">
+    <div class="it-gallery-main">
+        <img src="/media/{{ c.images.0 }}" alt="">
+    </div>
+    {% if c.images|length > 1 %}
+    <div class="it-gallery-thumbs">
+        {% for img in c.images %}
+        {% if not forloop.first %}
+        <img src="/media/{{ img }}" alt=""
+             onclick="itGallerySwap(this, '{{ img }}')"
+             class="it-gallery-thumb">
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+{% elif c.photo_display == 'grid' %}
+<div class="it-grid {% if full_width %}it-grid--full{% endif %}">
+    {% for img in c.images %}
+    <img src="/media/{{ img }}" alt="" class="it-grid-item">
+    {% endfor %}
+</div>
+
+{% elif c.photo_display == 'slider' %}
+<div class="it-slider {% if full_width %}it-slider--full{% endif %}"
+     data-images="{{ c.images|join:',' }}">
+    <div class="it-slider-main">
+        <img src="/media/{{ c.images.0 }}" alt="" id="it-slider-img-{{ section.pk }}">
+        {% if c.images|length > 1 %}
+        <button class="it-slider-arrow it-slider-arrow--prev"
+                onclick="itSliderPrev({{ section.pk }})">←</button>
+        <button class="it-slider-arrow it-slider-arrow--next"
+                onclick="itSliderNext({{ section.pk }})">→</button>
+        {% endif %}
+    </div>
+    {% if c.images|length > 1 %}
+    <div class="it-slider-dots" id="it-slider-dots-{{ section.pk }}">
+        {% for img in c.images %}
+        <span class="it-slider-dot {% if forloop.first %}active{% endif %}"
+              onclick="itSliderGo({{ section.pk }}, {{ forloop.counter0 }})"></span>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+{% endif %}
+
+{% endif %}
+{% endwith %}
