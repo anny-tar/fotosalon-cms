@@ -14,6 +14,12 @@
     <div class="section-editor-form">
         <div class="detail-card">
 
+            {% if has_draft %}
+            <div class="alert alert-warning" style="margin-bottom:16px">
+                ⚠️ Есть несохранённый черновик. Посетители видят опубликованную версию.
+            </div>
+            {% endif %}
+
             <div id="fields-container">
                 {% include 'panel/pages/fields/'|add:template_name|add:'.html' %}
             </div>
@@ -21,22 +27,27 @@
             <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap">
                 <button type="button" class="btn btn-primary"
                         onclick="publishSection()">
-                    Сохранить и опубликовать
+                    Опубликовать
                 </button>
                 <button type="button" class="btn btn-secondary"
                         onclick="saveDraft()">
                     Сохранить черновик
                 </button>
-                <a id="previewPageLink"
-                   href="/{{ section.page }}/?preview=1#section-{{ section.pk }}"
-                   target="_blank"
-                   class="btn btn-secondary"
-                   style="display:none">
+                {% if has_draft %}
+                <button type="button" class="btn btn-danger"
+                        onclick="rollback()">
+                    Откатить к опубликованному
+                </button>
+                {% endif %}
+                <a href="{{ page_preview_url }}" target="_blank"
+                   class="btn btn-secondary">
                     Превью страницы →
                 </a>
             </div>
 
-            <div id="saveStatus" style="margin-top:8px;font-size:13px;color:var(--gray-600)"></div>
+            <div id="saveStatus"
+                 style="margin-top:8px;font-size:13px;color:var(--gray-600)">
+            </div>
         </div>
     </div>
 
@@ -72,8 +83,6 @@ function getContent() {
 
 function updatePreview() {
     const content = getContent();
-    const frame   = document.getElementById('previewFrame');
-
     fetch('/panel/pages/sections/preview/', {
         method: 'POST',
         headers: { 'X-CSRFToken': getCookie('csrftoken') },
@@ -84,59 +93,57 @@ function updatePreview() {
     })
     .then(r => r.text())
     .then(html => {
+        const frame = document.getElementById('previewFrame');
         frame.srcdoc = html;
         frame.onload = function() {
             try {
-                const h = frame.contentDocument.body.scrollHeight;
-                frame.style.height = Math.max(h, 200) + 'px';
+                frame.style.height =
+                    Math.max(frame.contentDocument.body.scrollHeight, 200) + 'px';
             } catch(e) {}
         };
     });
 }
 
 function saveDraft() {
-    const content = getContent();
     setStatus('Сохраняем черновик...');
-
-    fetch('/panel/pages/sections/' + SECTION_PK + '/draft/', {
-        method: 'POST',
-        headers: { 'X-CSRFToken': getCookie('csrftoken') },
-        body: new URLSearchParams({ content: JSON.stringify(content) }),
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.ok) {
-            setStatus('Черновик сохранён');
-            const link = document.getElementById('previewPageLink');
-            link.href = data.preview_url;
-            link.style.display = 'inline-flex';
-        }
+    postAction('draft').then(data => {
+        if (data.ok) setStatus('Черновик сохранён. Посетители видят прежнюю версию.');
     });
 }
 
 function publishSection() {
-    const content = getContent();
     setStatus('Публикуем...');
-
-    fetch('/panel/pages/sections/' + SECTION_PK + '/edit/', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-            is_active: '{{ section.is_active|yesno:"on," }}',
-            content: JSON.stringify(content),
-        }),
-    })
-    .then(r => {
-        if (r.ok) {
+    postAction('publish').then(data => {
+        if (data.ok) {
             setStatus('Опубликовано!');
             setTimeout(() => {
                 window.location.href = '/panel/pages/' + SECTION_PAGE + '/sections/';
             }, 800);
         }
     });
+}
+
+function rollback() {
+    if (!confirm('Откатить к опубликованной версии? Черновик будет удалён.')) return;
+    setStatus('Откатываем...');
+    postAction('rollback').then(data => {
+        if (data.ok) window.location.reload();
+    });
+}
+
+function postAction(action) {
+    const content = getContent();
+    return fetch('/panel/pages/sections/' + SECTION_PK + '/edit/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            action:  action,
+            content: JSON.stringify(content),
+        }),
+    }).then(r => r.json());
 }
 
 function setStatus(msg) {
@@ -167,18 +174,15 @@ document.addEventListener('change', function(e) {
     }
 });
 
-// Заполняем форму из сохранённых данных
+// Заполняем поля — editor_content = draft ?? content
 window.addEventListener('load', function() {
-    const saved = {{ content_json|safe }};
-    const draft = {{ draft_json|safe }};
-    const data  = Object.keys(draft).length > 0 ? draft : saved;
-
+    const data = {{ content_json|safe }};
     if (data && Object.keys(data).length > 0) {
         Object.entries(data).forEach(function([key, val]) {
             const el = document.querySelector('[name="' + key + '"]');
             if (!el) return;
             if (el.type === 'checkbox') el.checked = val === true;
-            else if (el.value !== undefined) el.value = val;
+            else el.value = val;
         });
     }
     updatePreview();

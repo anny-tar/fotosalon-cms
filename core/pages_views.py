@@ -97,33 +97,56 @@ def section_create(request, page):
     messages.success(request, f'Секция «{SECTION_TYPES[section_type]}» добавлена.')
     return redirect(f'/panel/pages/sections/{section.pk}/edit/')
 
-
-@admin_required
 @admin_required
 def section_edit(request, pk):
     section = get_object_or_404(PageSection, pk=pk)
 
     if request.method == 'POST':
+        action      = request.POST.get('action', 'publish')
         content_raw = request.POST.get('content', '{}')
-        is_active   = request.POST.get('is_active') == 'on'
+
         try:
-            section.content = json.loads(content_raw)
+            new_content = json.loads(content_raw)
         except Exception:
-            section.content = {}
-        section.draft_content = {}
-        section.is_active = is_active
-        section.save()
-        messages.success(request, 'Секция сохранена.')
-        return redirect(f'/panel/pages/{section.page}/sections/')
+            new_content = {}
+
+        if action == 'draft':
+            # Сохраняем черновик — content не трогаем
+            section.draft_content = new_content
+            section.save()
+            import json as _json
+            return JsonResponse({
+                'ok': True,
+                'has_draft': True,
+                'preview_url': ('/' if section.page == 'home' else f'/{section.page}/') + '?preview=1',
+            })
+
+        elif action == 'publish':
+            # Публикуем — копируем в content, очищаем черновик
+            section.content       = new_content
+            section.draft_content = {}
+            section.save()
+            return JsonResponse({'ok': True, 'published': True})
+
+        elif action == 'rollback':
+            # Откатываем — очищаем черновик
+            section.draft_content = {}
+            section.save()
+            return JsonResponse({'ok': True, 'rolled_back': True})
 
     import json as _json
     template_name = section.template.template_name
+
+    # editor_content = draft_content ?? content
+    editor_content = section.draft_content if section.draft_content else section.content
+
     context = {
         'section':           section,
         'template_name':     template_name,
         'section_type_name': SECTION_TYPES.get(template_name, template_name),
-        'content_json':      _json.dumps(section.content),
-        'draft_json':        _json.dumps(section.draft_content),
+        'content_json':      _json.dumps(editor_content),
+        'has_draft':         bool(section.draft_content),
+        'page_preview_url':  '/?preview=1' if section.page == 'home' else f'/{section.page}/?preview=1',
     }
     return render(request, 'panel/pages/section_edit.html', context)
 
